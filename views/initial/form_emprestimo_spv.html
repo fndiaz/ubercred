@@ -1,0 +1,143 @@
+{{extend 'layout.html'}}
+
+{{block center}}
+<div class='row'>
+<div class="span5">
+<div class="well">
+{{=form.custom.begin}}
+<label>data:</label>
+<div>{{=form.custom.widget.data_emp}}</div>
+<br>
+
+<label>nome:</label> 
+<div>{{=form.custom.widget.nome}}</div>
+<br>
+
+<label>cpf:</label> 
+<div>{{=form.custom.widget.cpf}}</div>
+<br>
+
+<label>telefone:</label> 
+<div>{{=form.custom.widget.telefone}}</div>
+<br>
+
+<label>estado:</label> 
+<div>{{=form.custom.widget.estado}}</div>
+<br>
+
+{{if id_edit is None:}}
+<label>cidade:</label> 
+<div>
+<select class="generic-widget" id="emprestimo_cidade" name="cidade">
+<option value=""></option>
+</select>
+</div>
+<br>
+{{else:}}
+<label>cidade:</label> 
+<div>
+<select class="generic-widget" id="emprestimo_cidade" name="cidade">
+<option value="{{=cidade}}">{{=cidade}}</option></select>
+</select>
+</div>
+<br>
+{{pass}}
+{{pass}}
+
+<label>valor da parcela:</label>
+<div>{{=form.custom.widget.valor_parcela}}</div>
+<br>
+
+<label>valor total:</label> 
+<div>{{=form.custom.widget.valor_total}}</div>
+<br>
+
+<button type="submit" class="btn btn-primary">Enviar</button>
+</div>
+</div><!--span5-->
+
+
+<div class='row'>
+<div class="span5">
+<div class="well">
+
+<label>orgão:</label> 
+<div>{{=form.custom.widget.orgao}}</div>
+<br>
+
+<label>operação:</label>
+<div>{{=form.custom.widget.operacao}}</div>
+<br>
+
+{{if id_edit is None:}}
+<label>vendedora:</label> 
+<div><input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
+</div>
+<br>
+{{else:}}
+<label>Vendedora:</label> 
+<div>{{=form.custom.widget.vendedora}}</div>
+<br>
+{{pass}}
+{{pass}}
+ 
+<label>número de parcelas:</label> 
+<div>{{=form.custom.widget.n_parcelas}}</div>
+<br>
+
+{{if id_edit is None:}}
+<label>empresa:</label> 
+<div>
+    <select class="generic-widget" id="emprestimo_id_empresa" name="id_empresa" readonly>
+        <option value="{{=ls_user[2]}}">{{=ls_user[1]}}</option></select>
+</div>
+<br>
+{{else:}}
+<label>empresa:</label> 
+<div>{{=form.custom.widget.id_empresa}}</div>
+<br>
+{{pass}}
+{{pass}}
+ 
+
+<label>banco:</label> 
+<div>{{=form.custom.widget.banco}}</div>
+<br>
+
+<label>contrato:</label> 
+<div>{{=form.custom.widget.contrato}}</div>
+<br>
+
+<label>adesão</label> 
+<div>{{=form.custom.widget.adesao}}</div>
+<br>
+
+{{=form.custom.end}}
+</div><!--span5-->
+</div>
+</div><!--row-->
+
+<script>
+   $("#emprestimo_estado").change(function(){
+    var msg = $("#emprestimo_estado").val();
+    //alert(msg);
+      $.ajax({
+         type: "POST",
+         url: "cidades_json",
+         data: {estado: $("#emprestimo_estado").val()},
+         dataType: "json",
+         success: function(json){
+            var options = "";
+            //alert(json[0].Nome);
+            $.each(json, function(i, value){
+                if (json[i].Estado == msg){
+                //    alert(json[i].Nome);
+                options += '<option value="' + json[i].Nome + '">' + json[i].Nome + '</option>';
+                }
+            });
+            $("#emprestimo_cidade").html(options);
+         }
+      });
+   });
+</script>
+{{end}}

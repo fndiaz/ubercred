@@ -1,0 +1,51 @@
+{{extend 'layout.html'}}
+
+{{block center}}
+<div class='row'>
+<div class="span5">
+<div class="well">
+
+{{for dado in con:}}
+<!--python validando estado e escrevendo-->
+{{
+var = ""
+if dado.emprestimo.estado != None:
+var=db(db.estados.id == dado.emprestimo.estado).select(db.estados.nome)
+var = var[0].nome
+pass
+}}
+<h4><i class=" icon-user"></i>&nbsp;&nbsp;<b>{{=dado.emprestimo.nome}}</b></h4><br>
+<h4><i class=" icon-calendar"></i>&nbsp;&nbsp;<b>{{=dado.emprestimo.data_emp}}</b></h4><br>
+<h4><i class=" icon-tag"></i>&nbsp;&nbsp;cpf: <b>{{=dado.emprestimo.cpf}}</b></h4><br>
+<h4><i class=" icon-info-sign"></i>&nbsp;&nbsp;telefone: <b>{{=dado.emprestimo.telefone}}</b></h4><br>
+<h4><i class=" icon-map-marker"></i>&nbsp;&nbsp;estado: <b>{{=var}}</b></h4><br>
+<h4><i class=" icon-map-marker"></i>&nbsp;&nbsp;cidade: <b>{{=dado.emprestimo.cidade}}</b></h4><br>
+<h4><i class=" icon-chevron-right"></i>&nbsp;&nbsp;orgão: <b>{{=dado.emprestimo.orgao}}</b></h4><br>
+<h4><i class="  icon-shopping-cart"></i>&nbsp;&nbsp;vendedora: <b>{{=dado.emprestimo.vendedora}}</b></h4><br>
+{{pass}}
+
+</div><!--span5-->
+</div><!--span5-->
+
+
+
+<div class="span5">
+<div class="well">
+
+{{for dado in con:}}
+<h4><i class=" icon-barcode"></i>&nbsp;&nbsp;valor total: <b>{{=dado.emprestimo.valor_total}}</b></h4><br>
+<h4><i class=" icon-barcode"></i>&nbsp;&nbsp;valor parcela: <b>{{=dado.emprestimo.valor_parcela}}</b></h4><br>
+<h4><i class=" icon-plus-sign"></i>&nbsp;&nbsp;qtd parcelas: <b>{{=dado.emprestimo.n_parcelas}}</b></h4><br>
+<h4><i class=" icon-chevron-right"></i>&nbsp;&nbsp;operação: <b>{{=dado.emprestimo.operacao}}</b></h4><br>
+<h4><i class=" icon-home"></i>&nbsp;&nbsp;empresa: <b>{{=dado.empresa.nome}}</b></h4><br>
+<h4><i class="  icon-briefcase"></i>&nbsp;&nbsp;banco: <b>{{=dado.emprestimo.banco}}</b></h4><br>
+<h4><i class=" icon-book"></i>&nbsp;&nbsp;contrato: <b>{{=dado.emprestimo.contrato}}</b></h4><br>
+<h4><i class=" icon-book"></i>&nbsp;&nbsp;adesão: <b>{{=dado.emprestimo.adesao}}</b></h4><br>
+{{pass}}
+
+</div><!--span5-->
+</div><!--well-->
+</div><!--row-->
+
+
+{{end}}

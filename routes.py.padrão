@@ -1,0 +1,17 @@
+routers = dict(
+
+    # base router
+    BASE=dict(
+        default_application='padrao',
+	applications=['projeto', 'admin',]
+    ),
+
+    padrao=dict(
+        default_controller='initial',
+        default_function='principal',
+        controllers=['initial', 'manager'],
+        functions=['home', 'contact', 'about', 'user', 'log', 
+            'user', 'register', 'login', 'principal', 'log_out', 'log_in']
+    )
+
+)

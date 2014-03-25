@@ -1,0 +1,76 @@
+{{extend 'layout.html'}}
+
+
+{{block center}}
+<div style="margin-left:-60px; margin-right:-60px">
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_situacao')}}?id_emp={{=id_emp}}" >Adicionar</button>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Empréstimo</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Observação</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {{for dado in con:}}
+        <tr>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.nome}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.status.status}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.situacao.data_sit}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.situacao.obs}}</td>
+            <td style="border:1px solid #ADC2CC">          
+
+            </td>
+        </tr>
+    {{pass}}
+    </tbody>
+</table>
+
+<!-- Paginacao -->
+{{if paginacao == 'on':}}
+<div class="pagination">
+    <ul class="pagination">
+        {{if end != paginate:}}<!--maior que 10 não escreve anterior-->
+        <li><a href={{=URL(vars={'page':int(request.vars.page)-1})}}>Anterior</a></li>
+        {{pass}}
+
+        {{for num in range((regis // paginate)+x):
+            num = num +1}}
+        {{if num == int(request.vars.page):}}
+        <li class="active"><a href={{=URL(vars={'page':num, 'id_emp':id_emp})}}>{{=num}}</a></li>
+        {{else:}}
+        <li><a href={{=URL(vars={'page':num, 'id_emp':id_emp})}}>{{=num}}</a></li>
+        {{pass}}
+        {{pass}}
+
+        {{if not end >= regis:}}<!--nao escreve proximo (ultima pagina)-->
+        <li class="active">
+        <li><a href={{=URL(vars={'page':int(request.vars.page)+1})}}>Próximo</a></li>
+        {{pass}}
+    </ul>
+</div>
+{{pass}}
+
+
+<script>
+var links = document.querySelectorAll('.link');
+for (x in links) {
+    links[x].onclick = function() { 
+    var data_attr = this.dataset;
+    //alert(data_attr.value);
+    var id   = data_attr.value;
+    var nome = data_attr.nome;
+    var tabela= data_attr.tabela;
+    decisao = confirm("Tem certeza que deseja remover o item "+nome);
+        if(decisao){
+            location.href="{{=URL(a='ubercred', c='initial', f='delete')}}?id_tab="+id+"&tabela="+tabela+";"
+        }
+    return false;
+    }
+}
+</script>
+{{end}}

@@ -1,0 +1,43 @@
+{{extend 'layout.html'}}
+
+{{block center}}
+<div class='row'>
+<div class="span5">
+<div class="well">
+{{=form.custom.begin}}
+
+<label>data:</label> 
+<div>{{=form.custom.widget.data_sit}}</div>
+<br>
+
+{{if id_emp != None:}}
+<label>empréstimo:</label> 
+<div>
+<select class="generic-widget" id="situacao_id_emprestimo" name="id_emprestimo">
+<option value="{{=emp.id}}">{{=emp.nome}}</option>
+</select>
+</div>
+<br>
+{{else:}}
+<label>empréstimo:</label>
+<div>{{=form.custom.widget.id_emprestimo}}</div>
+<br>
+{{pass}}
+{{pass}}
+
+<label>status:</label> 
+<div>{{=form.custom.widget.id_status}}</div>
+<br>
+
+<label>Obeservação:</label> 
+<div>{{=form.custom.widget.obs}}</div>
+<br>
+
+<button type="submit" class="btn btn-primary">Enviar</button>
+<br>
+{{=form.custom.end}}
+</div><!--span5-->
+</div>
+</div><!--row-->
+
+{{end}}

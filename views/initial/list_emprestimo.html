@@ -1,0 +1,115 @@
+{{extend 'layout.html'}}
+
+
+{{block center}}
+<div style="margin-left:-60px; margin-right:-60px">
+
+
+<!--<div class="a" style="float:left; position:relative">
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}" >Adicionar</button>
+</div>-->
+
+<div class="a" style="float:left; position:relative; margin-left:0px">
+<form action="busca_emp_pend" method="POST">
+<input id="busca_emp_pend" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto;" data-provide="typeahead" data-items="4" data-source="">
+<button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
+</form>
+</div>
+
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Cpf</th>
+            <th>Telefone</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>V parcela</th>
+            <th>V total</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{for dado in con:}}
+        <tr>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.data_emp}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.nome}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.cpf}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.telefone}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.estado}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.cidade}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_parcela}}</td>
+            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_total}}</td>
+            <td style="border:1px solid #ADC2CC">
+                <a href="{{=URL(a='ubercred', c='initial', f='detalhes_emprestimo')}}?id_det={{=dado.emprestimo.id}}">
+                    <i class=" icon-zoom-in"></i></a> &nbsp;&nbsp;                
+
+                <a href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}?id_edit={{=dado.emprestimo.id}}">
+                    <i class=" icon-edit"></i></a> &nbsp;&nbsp;
+                
+                <a class="link" data-tabela="emprestimo" data-nome="{{=dado.emprestimo.nome}}" data-value="{{=dado.emprestimo.id}}" href="#">
+                    <i class=" icon-trash"></i></a>
+            </td>
+        </tr>
+    {{pass}}
+    </tbody>
+</table>
+
+<!-- Paginacao -->
+{{if paginacao == 'on':}}
+<div class="pagination">
+    <ul class="pagination">
+        {{if end != paginate:}}<!--maior que 10 não escreve anterior-->
+        <li><a href={{=URL(vars={'page':int(request.vars.page)-1})}}>Anterior</a></li>
+        {{pass}}
+
+        {{for num in range((regis // paginate)+x):
+            num = num +1}}
+        {{if num == int(request.vars.page):}}
+        <li class="active"><a href={{=URL(vars={'page':num})}}>{{=num}}</a></li>
+        {{else:}}
+        <li><a href={{=URL(vars={'page':num})}}>{{=num}}</a></li>
+        {{pass}}
+        {{pass}}
+
+        {{if not end >= regis:}}<!--nao escreve proximo (ultima pagina)-->
+        <li class="active">
+        <li><a href={{=URL(vars={'page':int(request.vars.page)+1})}}>Próximo</a></li>
+        {{pass}}
+    </ul>
+</div>
+{{pass}}
+
+</div>
+
+<script>
+var links = document.querySelectorAll('.link');
+for (x in links) {
+    links[x].onclick = function() { 
+    var data_attr = this.dataset;
+    //alert(data_attr.value);
+    var id   = data_attr.value;
+    var nome = data_attr.nome;
+    var tabela= data_attr.tabela;
+    decisao = confirm("Tem certeza que deseja remover o item "+nome);
+        if(decisao){
+            location.href="{{=URL(a='ubercred', c='initial', f='delete')}}?id_tab="+id+"&tabela="+tabela+";"
+        }
+    return false;
+    }
+}
+
+$.ajax({
+method: "get",
+url: "initial/cpf_json?func=pend",
+dataType: "json",
+success: function(nome){
+  $('#busca_emp_pend').typeahead({source: nome});
+}
+});
+
+</script>
+{{end}}

@@ -1,0 +1,177 @@
+{{extend 'layout.html'}}
+
+{{block center}}
+<a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="{{=lem}}" data-original-title="Nota" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Lembrete</a>
+
+
+
+<div class='row'>
+<div class="span5">
+<div class="well">
+{{=form.custom.begin}}
+<div>
+<label>data:</label>
+<div><input class="" id="emprestimo_data_emp" name="data_emp" type="text" value="{{=date}}" readonly></div>
+<br>
+</div>
+
+<div>
+<label>nome:</label> 
+<div>{{=form.custom.widget.nome}}</div>
+<br>
+</div>
+
+<div>
+<label>cpf:</label> 
+<div>{{=form.custom.widget.cpf}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>telefone:</label> 
+<div>{{=form.custom.widget.telefone}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>estado:</label> 
+<div>{{=form.custom.widget.estado}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>cidade:</label> 
+<div><select class="generic-widget" id="emprestimo_cidade" name="cidade">
+<option value=""></option>
+</option></select></div>
+<br>
+</div>
+
+<div>
+<label>orgão:</label> 
+<div>{{=form.custom.widget.orgao}}</div>
+<br>
+</div>
+
+<div>
+<label>adesão</label> 
+<div>{{=form.custom.widget.adesao}}</div>
+<br>
+</div>
+
+<button type="submit" class="btn btn-primary">Enviar</button>
+</div><!--well-->
+</div><!--span5-->
+
+
+
+<div class="span5">
+<div class="well">
+
+<div>    
+<label>valor total:</label> 
+<div>{{=form.custom.widget.valor_total}}</div>
+<br>
+</div>
+
+<div>
+<label>valor da parcela:</label>
+<div>{{=form.custom.widget.valor_parcela}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>operação:</label>
+<div>{{=form.custom.widget.operacao}}</div>
+<br>
+</div>
+
+<div>
+<label>número de parcelas:</label> 
+<div>{{=form.custom.widget.n_parcelas}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>banco:</label> 
+<div>{{=form.custom.widget.banco}}</div>
+<br>
+</div>
+
+<div style="display: none;">
+<label>contrato:</label> 
+<div>{{=form.custom.widget.contrato}}</div>
+<br>
+</div>
+
+<label>vendedora:</label> 
+<div><input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
+</div>
+<br><br>
+
+<label>empresa:</label> 
+<div>
+    <select class="generic-widget" id="emprestimo_id_empresa" name="id_empresa" readonly>
+        <option value="{{=ls_user[2]}}">{{=ls_user[1]}}</option></select>
+</div>
+<br><br>
+
+{{=form.custom.end}}
+</div><!--well-->
+</div><!--span-->
+
+ 
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Inserção de lemberete</h3>
+  </div>
+
+<div class="modal-body">
+    <p>Digite abaixo…</p>
+    <form action="lembrete" method="POST">
+    <textarea class="text" cols="400" id="id_lembrete" name="lembrete" rows="10">{{=lem}}</textarea> 
+</div>
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+    <button type="submit" class="btn btn-primary" name="Pesquisa">Salvar</i></button>
+    </form>
+</div>
+
+</div><!--modal-->
+
+</div><!--row-->
+
+</div><!--margin-->
+
+<script>
+   $("#emprestimo_estado").change(function(){
+    var msg = $("#emprestimo_estado").val();
+    //alert(msg);
+      $.ajax({
+         type: "POST",
+         url: "cidades_json",
+         data: {estado: $("#emprestimo_estado").val()},
+         dataType: "json",
+         success: function(json){
+            var options = "";
+            //alert(json[0].Nome);
+            $.each(json, function(i, value){
+                if (json[i].Estado == msg){
+                //    alert(json[i].Nome);
+                options += '<option value="' + json[i].Nome + '">' + json[i].Nome + '</option>';
+                }
+            });
+            $("#emprestimo_cidade").html(options);
+         }
+      });
+   });
+
+$(function ()  
+  { $("#button").popover({ placement: "bottom", trigger: "hover" });  
+});  
+
+</script>
+{{end}}
