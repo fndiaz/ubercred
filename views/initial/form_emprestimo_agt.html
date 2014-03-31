@@ -56,13 +56,11 @@
 <div>
 <label>adesão</label> 
 <div>{{=form.custom.widget.adesao}}</div>
-<br>
 </div>
 
-<button type="submit" class="btn btn-primary">Enviar</button>
+
 </div><!--well-->
 </div><!--span5-->
-
 
 
 <div class="span5">
@@ -107,19 +105,22 @@
 <label>vendedora:</label> 
 <div><input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
 </div>
-<br><br>
+<br>
 
 <label>empresa:</label> 
 <div>
     <select class="generic-widget" id="emprestimo_id_empresa" name="id_empresa" readonly>
         <option value="{{=ls_user[2]}}">{{=ls_user[1]}}</option></select>
 </div>
-<br><br>
+<br>
 
-{{=form.custom.end}}
 </div><!--well-->
 </div><!--span-->
 
+<div class="span1">
+<button type="submit" class="btn btn-primary">Enviar</button>
+</div>
+{{=form.custom.end}}
  
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

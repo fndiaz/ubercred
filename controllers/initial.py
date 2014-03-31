@@ -185,7 +185,7 @@ def form_emprestimo_spv():
 
 	if form.process().accepted:
 		session.flash=("Registro processado")
-		redirect(URL("emprestimo")) 
+		redirect(URL("emprestimo2")) 
 	else:
 		print request.vars
 	
@@ -249,12 +249,36 @@ def emprestimo2():
 	if regis%paginate == 0:
 		x=0
 	#	
-	con = db(query).select(limitby=(start,end), orderby=db.emprestimo.id)
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
 	
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
 
-@auth.requires_membership('supervisor')
+def emprestimo_agt():
+	response.title = "Emprestimos"
+	user = session.auth.user.username
+	query = (db.emprestimo.id_empresa == db.empresa.id) &\
+	(db.emprestimo.vendedora == user)
+	#
+	paginate 	=	10
+	if not request.vars.page:
+		redirect(URL(vars={'page':1}))
+	else:
+		page 	=	int(request.vars.page)
+	start 	=	(page-1)*paginate
+	end 	=	page*paginate
+	regis 	=	db(query).count()
+	print regis
+	x=1
+	if regis%paginate == 0:
+		x=0
+	#
+
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	return response.render("initial/list_emprestimo2.html", con=con,
+		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
+
+
 def detalhes_emprestimo():
 	response.title = "Detalhes"
 	id_det = request.vars.id_det
@@ -280,7 +304,7 @@ def busca_emp_total():
 	query = (db.emprestimo.id_empresa == db.empresa.id)\
 		& (db.emprestimo.cpf == request.vars.cpf)
 
-	con = db(query).select(orderby=db.emprestimo.id)
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), orderby=db.emprestimo.id)
 	
 	return response.render("initial/list_emprestimo2.html", con=con,
 													paginacao='off')
@@ -341,7 +365,7 @@ def situacao():
 @auth.requires_membership('supervisor')
 def users():
 	print 'users'
-	grid 	= SQLFORM.grid(db.auth_user, user_signature=False)
+	grid 	= SQLFORM.grid(db.auth_user, csv=False, user_signature=False)
 	#print usuarios
 	
 	return response.render("initial/show_grid.html", grid=grid)
