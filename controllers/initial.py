@@ -35,20 +35,18 @@ def cpf_json():
 
 def estados_json():
 	print request.vars
-	with open('/home/fernado/web2py/tronco/applications/ubercred/views/estados.json') as json_data:
+	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
 		json_data = json.load(json_data)
 		#print json_data[0]
 		#for dado in json_data:
-		#	print dado
+		##	print dado
 
 	return response.json(json_data)
 	#return response.render("estados.json")
 
 def cidades_json():
 	print request.vars
-	var = URL('/views/cidades.json')
-	print var
-	with open('/home/fernado/web2py/tronco/applications/ubercred/views/cidades.json') as json_data:
+	with open('%s/applications/ubercred/views/cidades.json' %(session.raiz)) as json_data:
 		json_data = json.load(json_data)
 		print(json_data)
 

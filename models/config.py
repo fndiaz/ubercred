@@ -93,8 +93,8 @@ if request.is_local:
 response.title= "titulo response"
 response.meta.keywords= "chave, outra, e outra"
 
-#if not 'pastas' in session:
-#    session.pastas = []
+if not 'raiz' in session:
+    session.raiz = '/home/fernando/Documentos/web2py/atual'
 
 #if not 'ano' in session:
 #    session.ano = '0'

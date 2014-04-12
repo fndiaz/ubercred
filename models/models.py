@@ -1,4 +1,4 @@
-####Banco de Dados
+######Banco de Dados
 
 db.define_table("status",
 	Field("status", "string"),
@@ -40,8 +40,8 @@ if not db(db.estados).count():
 	print '>>>>>>'
 	import  json
 	from pprint import pprint
-	print json.dumps("/home/fernado/web2py/tronco/applications/ubercred/views/estados.json")
-	with open('/home/fernado/web2py/tronco/applications/ubercred/views/estados.json') as json_data:
+	print json.dumps("%s/applications/ubercred/views/estados.json" %(raiz))
+	with open('%s/applications/ubercred/views/estados.json' %(raiz)) as json_data:
 		json_data = json.load(json_data)
 		print 'ow'
 		#print json_data['Nome']
