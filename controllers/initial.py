@@ -14,6 +14,10 @@ def principal():
 	if func == "agente":
 		auth.add_membership(2, id_user)
 		redirect(URL(form_emprestimo))
+	if func == "admin":
+		print 'aa'
+		auth.add_membership(3, id_user)
+		redirect(URL(emprestimo))
 	
 	return response.render("initial/principal.html", teste=teste)
 
@@ -73,7 +77,7 @@ def user():
 	return response.render("login/user.html", user=auth())
 
 ##---------------------------Emepresa
-@auth.requires_membership('supervisor')
+@auth.requires_membership('admin')
 def form_empresa():
 	response.title = 'Empresa'
 	id_edit	= request.vars['id_edit']
@@ -88,7 +92,7 @@ def form_empresa():
 
 	return response.render("initial/show_form.html", form=form)
 
-@auth.requires_membership('supervisor')
+@auth.requires_membership('admin')
 def empresa():
 	print session
 	response.title = 'empresa'
@@ -98,7 +102,7 @@ def empresa():
 		empresa=empresa)
 
 ##---------------------------Status
-@auth.requires_membership('supervisor')
+@auth.requires_membership('admin')
 def form_status():
 	response.title = "Status"
 	id_edit = request.vars['id_edit']
@@ -113,13 +117,89 @@ def form_status():
 
 	return response.render("initial/show_form.html", form=form)	
 
-@auth.requires_membership('supervisor')
+@auth.requires_membership('admin')
 def status():
 	response.title = 'status'
 	status 	=	db(db.status).select(orderby=db.status.id)
 
 	return response.render("initial/list_status.html", 
 		status=status)
+
+##---------------------------Funcao
+@auth.requires_membership('admin')
+def form_funcao():
+	response.title = 'função'
+	id_edit	= request.vars['id_edit']
+
+	if id_edit is None:
+		form 	= SQLFORM(db.funcao)
+	else:
+		form 	= SQLFORM(db.funcao, id_edit)
+
+	if form.process().accepted:
+		redirect(URL("funcao"))
+
+	return response.render("initial/show_form.html", form=form)
+
+@auth.requires_membership('admin')
+def funcao():
+	#print session
+	response.title = 'função'
+	funcao =	db(db.funcao).select(orderby=db.funcao.id)
+
+	return response.render("initial/list_funcao.html", 
+		funcao=funcao)
+
+##---------------------------Banco
+@auth.requires_membership('admin')
+def form_banco():
+	response.title = 'banco'
+	id_edit	= request.vars['id_edit']
+
+	if id_edit is None:
+		form 	= SQLFORM(db.banco)
+	else:
+		form 	= SQLFORM(db.banco, id_edit)
+
+	if form.process().accepted:
+		redirect(URL("banco"))
+
+	return response.render("initial/show_form.html", form=form)
+
+@auth.requires_membership('admin')
+def banco():
+	#print session
+	response.title = 'banco'
+	banco =	db(db.banco).select(orderby=db.banco.id)
+
+	return response.render("initial/list_banco.html", 
+		banco=banco)
+
+##---------------------------Orgao
+@auth.requires_membership('admin')
+def form_orgao():
+	response.title = 'orgão'
+	id_edit	= request.vars['id_edit']
+
+	if id_edit is None:
+		form 	= SQLFORM(db.orgao)
+	else:
+		form 	= SQLFORM(db.orgao, id_edit)
+
+	if form.process().accepted:
+		redirect(URL("orgao"))
+
+	return response.render("initial/show_form.html", form=form)
+
+@auth.requires_membership('admin')
+def orgao():
+	#print session
+	response.title = 'orgão'
+	orgao =	db(db.orgao).select(orderby=db.orgao.id)
+
+	return response.render("initial/list_orgao.html", 
+		orgao=orgao)
+
 
 ##---------------------------Emprestimo
 @auth.requires_login()
@@ -136,6 +216,13 @@ def form_emprestimo():
 		"form_emprestimo_spv?id_edit="+id_edit))
 		else:
 			redirect(URL(form_emprestimo_spv))
+	if funcao == "admin":
+		if id_edit != None:
+			redirect(URL("initial",
+		"form_emprestimo_spv?id_edit="+id_edit))
+		else:
+			redirect(URL(form_emprestimo_spv))
+
 
 @auth.requires_login()
 def form_emprestimo_agt():
@@ -163,7 +250,7 @@ def form_emprestimo_agt():
 	return response.render("initial/form_emprestimo_agt.html", 
 				date=date, lem=lem, form=form, ls_user=ls_user)
 
-@auth.requires_membership('supervisor')
+@auth.requires_membership('supervisor', 'admin')
 def form_emprestimo_spv():
 	response.title = 'Emprestimo supervisor'
 	id_edit = request.vars['id_edit']
@@ -204,7 +291,7 @@ def get_user():
 	return ls_user
 
 
-@auth.requires_membership('supervisor')
+@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
 def emprestimo():
 	response.title = "Emprestimos pendentes"
 	query = (db.emprestimo.id_empresa == db.empresa.id) \
@@ -229,7 +316,7 @@ def emprestimo():
 	return response.render("initial/list_emprestimo.html", con=con, grid=grid,
 		end=end, paginacao="on", regis=regis, paginate=paginate, x=x)
 
-@auth.requires_membership('supervisor')
+@auth.requires_membership('supervisor', 'admin')
 def emprestimo2():
 	response.title = "Emprestimos totais"
 	query = (db.emprestimo.id_empresa == db.empresa.id)
@@ -360,7 +447,7 @@ def situacao():
 	return response.render("initial/list_situacao.html", con=con, id_emp=id_emp, 
 		x=x, end=end, paginacao='on', regis=regis, paginate=paginate) 	
 
-@auth.requires_membership('supervisor')
+@auth.requires_membership('admin')
 def users():
 	print 'users'
 	grid 	= SQLFORM.grid(db.auth_user, csv=False, user_signature=False)
@@ -395,6 +482,12 @@ def delete():
 		tabela 	= 	db.emprestimo.id
 	if funcao 	==	"situacao":
 		tabela 	= 	db.situacao.id
+	if funcao 	==	"funcao":
+		tabela 	= 	db.funcao.id
+	if funcao 	==	"banco":
+		tabela 	= 	db.banco.id
+	if funcao 	==	"orgao":
+		tabela 	= 	db.orgao.id
 
 	db(tabela == id_tab).delete()	
 	redirect(URL(funcao))

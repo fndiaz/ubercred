@@ -1,0 +1,631 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.SyntaxError'> widget cannot determine options of banco.commenata"
+p3
+sS'layer'
+p4
+S'/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py'
+p5
+sS'code'
+p6
+S'# coding=UTF-8\nimport  json\nfrom datetime import datetime\nfrom pprint import pprint\n\n\n@auth.requires_login()\ndef principal():\n\tfunc \t= session.auth.user.funcao\n\tid_user = session.auth.user.id\n\tif func == "supervisor":\n\t\tauth.add_membership(1, id_user)\n\t\tredirect(URL(emprestimo))\n\tif func == "agente":\n\t\tauth.add_membership(2, id_user)\n\t\tredirect(URL(form_emprestimo))\n\tif func == "admin":\n\t\tprint \'aa\'\n\t\tauth.add_membership(3, id_user)\n\t\tredirect(URL(emprestimo))\n\t\n\treturn response.render("initial/principal.html", teste=teste)\n\ndef cpf_json():\n\tif request.vars.func == "pend":\n\t\tquery = (db.emprestimo.id_empresa == db.empresa.id) \\\n\t\t& (db.emprestimo.estado == None) & (db.emprestimo.telefone == "")\n\n\tif request.vars.func == "total":\n\t\tquery = (db.emprestimo.id_empresa == db.empresa.id)\n\n\tcpf = db(query).select(db.emprestimo.cpf)\n\tlista = []\n\tfor dado in cpf:\n\t\tlista.append(dado.cpf)\n\tlista = list(set(lista))\n\n\treturn response.json(lista)\n\ndef estados_json():\n\tprint request.vars\n\twith open(\'%s/applications/ubercred/views/estados.json\' %(session.raiz)) as json_data:\n\t\tjson_data = json.load(json_data)\n\t\t#print json_data[0]\n\t\t#for dado in json_data:\n\t\t##\tprint dado\n\n\treturn response.json(json_data)\n\t#return response.render("estados.json")\n\ndef cidades_json():\n\tprint request.vars\n\twith open(\'%s/applications/ubercred/views/cidades.json\' %(session.raiz)) as json_data:\n\t\tjson_data = json.load(json_data)\n\t\tprint(json_data)\n\n\treturn response.json(json_data)\t\n\t#return response.render("cidades.json")\n\ndef user():\n\tprint request.args(0)\n\tif request.args(0) == \'login\':\n\t\t\treturn response.render("login/user.html", \n\t\t\t\t\t\t\t\t\t\tuser=auth())\n\n\tif request.args(0) == \'register\':\n\t\treturn response.render("login/user.html", \n\t\t\t\t\t\t\tuser=auth.register())\n\n\tif request.args(0) == \'not_authorized\':\n\t\tprint \'nao\'\n\n\tif request.args(0) == \'profile\':\n\t\treturn response.render("login/user.html", \n\t\t\t\t\t\t\tuser=auth.profile())\n\n\treturn response.render("login/user.html", user=auth())\n\n##---------------------------Emepresa\n@auth.requires_membership(\'admin\')\ndef form_empresa():\n\tresponse.title = \'Empresa\'\n\tid_edit\t= request.vars[\'id_edit\']\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.empresa)\n\telse:\n\t\tform \t= SQLFORM(db.empresa, id_edit)\n\n\tif form.process().accepted:\n\t\tredirect(URL("empresa"))\n\n\treturn response.render("initial/show_form.html", form=form)\n\n@auth.requires_membership(\'admin\')\ndef empresa():\n\tprint session\n\tresponse.title = \'empresa\'\n\tempresa =\tdb(db.empresa).select(orderby=db.empresa.id)\n\n\treturn response.render("initial/list_empresa.html", \n\t\tempresa=empresa)\n\n##---------------------------Status\n@auth.requires_membership(\'admin\')\ndef form_status():\n\tresponse.title = "Status"\n\tid_edit = request.vars[\'id_edit\']\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.status)\n\telse:\n\t\tform \t= SQLFORM(db.status, id_edit)\n\n\tif form.process().accepted:\n\t\tredirect(URL("status"))\n\n\treturn response.render("initial/show_form.html", form=form)\t\n\n@auth.requires_membership(\'admin\')\ndef status():\n\tresponse.title = \'status\'\n\tstatus \t=\tdb(db.status).select(orderby=db.status.id)\n\n\treturn response.render("initial/list_status.html", \n\t\tstatus=status)\n\n##---------------------------Funcao\n@auth.requires_membership(\'admin\')\ndef form_funcao():\n\tresponse.title = \'fun\xc3\xa7\xc3\xa3o\'\n\tid_edit\t= request.vars[\'id_edit\']\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.funcao)\n\telse:\n\t\tform \t= SQLFORM(db.funcao, id_edit)\n\n\tif form.process().accepted:\n\t\tredirect(URL("funcao"))\n\n\treturn response.render("initial/show_form.html", form=form)\n\n@auth.requires_membership(\'admin\')\ndef funcao():\n\t#print session\n\tresponse.title = \'fun\xc3\xa7\xc3\xa3o\'\n\tfuncao =\tdb(db.funcao).select(orderby=db.funcao.id)\n\n\treturn response.render("initial/list_funcao.html", \n\t\tfuncao=funcao)\n\n##---------------------------Banco\n@auth.requires_membership(\'admin\')\ndef form_banco():\n\tresponse.title = \'banco\'\n\tid_edit\t= request.vars[\'id_edit\']\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.banco)\n\telse:\n\t\tform \t= SQLFORM(db.banco, id_edit)\n\n\tif form.process().accepted:\n\t\tredirect(URL("banco"))\n\n\treturn response.render("initial/show_form.html", form=form)\n\n@auth.requires_membership(\'admin\')\ndef banco():\n\t#print session\n\tresponse.title = \'banco\'\n\tbanco =\tdb(db.banco).select(orderby=db.banco.id)\n\n\treturn response.render("initial/list_banco.html", \n\t\tbanco=banco)\n\n##---------------------------Orgao\n@auth.requires_membership(\'admin\')\ndef form_orgao():\n\tresponse.title = \'org\xc3\xa3o\'\n\tid_edit\t= request.vars[\'id_edit\']\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.orgao)\n\telse:\n\t\tform \t= SQLFORM(db.orgao, id_edit)\n\n\tif form.process().accepted:\n\t\tredirect(URL("orgao"))\n\n\treturn response.render("initial/show_form.html", form=form)\n\n@auth.requires_membership(\'admin\')\ndef orgao():\n\t#print session\n\tresponse.title = \'org\xc3\xa3o\'\n\torgao =\tdb(db.orgao).select(orderby=db.orgao.id)\n\n\treturn response.render("initial/list_orgao.html", \n\t\torgao=orgao)\n\n\n##---------------------------Emprestimo\n@auth.requires_login()\ndef form_emprestimo():\n\tid_edit = request.vars[\'id_edit\']\n\tprint id_edit\n\tprint session.auth.user\n\tfuncao = session.auth.user.funcao\n\tif funcao == "agente":\n\t\tredirect(URL(form_emprestimo_agt))\n\tif funcao == "supervisor":\n\t\tif id_edit != None:\n\t\t\tredirect(URL("initial",\n\t\t"form_emprestimo_spv?id_edit="+id_edit))\n\t\telse:\n\t\t\tredirect(URL(form_emprestimo_spv))\n\tif funcao == "admin":\n\t\tif id_edit != None:\n\t\t\tredirect(URL("initial",\n\t\t"form_emprestimo_spv?id_edit="+id_edit))\n\t\telse:\n\t\t\tredirect(URL(form_emprestimo_spv))\n\n\n@auth.requires_login()\ndef form_emprestimo_agt():\n\tresponse.title = \'Emprestimo agente\'\n\tid_edit = request.vars[\'id_edit\']\n\tdate = datetime.now()\n\tdate = date.strftime("%Y-%m-%d %I:%M:%S")\n\tls_user = get_user()\n\tprint session.auth.user.id\n\tquery = (db.auth_user.id == session.auth.user.id)\n\tlem = db(query).select(db.auth_user.lembrete)\n\tlem = lem[0].lembrete\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.emprestimo)\n\telse:\n\t\tform \t= SQLFORM(db.emprestimo, id_edit)\n\n\tif form.process().accepted:\n\t\tsession.flash="Registro processado"\n\t\tredirect(URL("form_emprestimo_agt")) \n\telif form.errors:\n\t\tresponse.flash=("Ops, algo est\xc3\xa1 errado")\n\t\n\treturn response.render("initial/form_emprestimo_agt.html", \n\t\t\t\tdate=date, lem=lem, form=form, ls_user=ls_user)\n\n@auth.requires_membership(\'supervisor\', \'admin\')\ndef form_emprestimo_spv():\n\tresponse.title = \'Emprestimo supervisor\'\n\tid_edit = request.vars[\'id_edit\']\n\tcidade = ""\n\tls_user = get_user()\n\tprint ls_user\n\n\tif id_edit is None:\n\t\tform \t= SQLFORM(db.emprestimo)\n\telse:\n\t\tform \t= SQLFORM(db.emprestimo, id_edit)\n\t\tform.element(_name=\'vendedora\')[\'_readonly\'] = \'readonly\'\n\t\tform.element(_name=\'id_empresa\')[\'_readonly\'] = \'readonly\'\n\t\tquery = db.emprestimo.id == id_edit\n\t\tcidade = db(query).select(db.emprestimo.cidade)\n\t\tcidade = cidade[0].cidade\n\n\tif form.process().accepted:\n\t\tsession.flash=("Registro processado")\n\t\tredirect(URL("emprestimo2")) \n\telse:\n\t\tprint request.vars\n\t\n\treturn response.render("initial/form_emprestimo_spv.html", \n\t\tcidade=cidade, id_edit=id_edit, form=form, ls_user=ls_user)\n\ndef get_user():\n\t# get user empresa\n\tuser = session.auth.user.username\n\tuser_emp_id = session.auth.user.id_empresa\n\tquery = (db.empresa.id == session.auth.user.id_empresa)\n\tuser_emp = db(query).select(db.empresa.nome)\n\tls_user=[]\n\tls_user.append(user)\n\tls_user.append(user_emp[0].nome)\n\tls_user.append(user_emp_id)\n\tprint ls_user\n\treturn ls_user\n\n\n@auth.requires(auth.has_membership(\'supervisor\') or auth.has_membership(\'admin\'))\ndef emprestimo():\n\tresponse.title = "Emprestimos pendentes"\n\tquery = (db.emprestimo.id_empresa == db.empresa.id) \\\n\t\t& (db.emprestimo.estado == None) & (db.emprestimo.telefone == "")\n\t#\n\tpaginate \t=\t10\n\tif not request.vars.page:\n\t\tredirect(URL(vars={\'page\':1}))\n\telse:\n\t\tpage \t=\tint(request.vars.page)\n\tstart \t=\t(page-1)*paginate\n\tend \t=\tpage*paginate\n\tregis \t=\tdb(query).count()\n\tprint regis\n\tx=1\n\tif regis%paginate == 0:\n\t\tx=0\n\t#\t\n\tcon = db(query).select(limitby=(start,end))\n\tgrid \t= SQLFORM.grid(db.emprestimo, user_signature=False)\n\t\n\treturn response.render("initial/list_emprestimo.html", con=con, grid=grid,\n\t\tend=end, paginacao="on", regis=regis, paginate=paginate, x=x)\n\n@auth.requires_membership(\'supervisor\', \'admin\')\ndef emprestimo2():\n\tresponse.title = "Emprestimos totais"\n\tquery = (db.emprestimo.id_empresa == db.empresa.id)\n\t#\n\tpaginate \t=\t10\n\tif not request.vars.page:\n\t\tredirect(URL(vars={\'page\':1}))\n\telse:\n\t\tpage \t=\tint(request.vars.page)\n\tstart \t=\t(page-1)*paginate\n\tend \t=\tpage*paginate\n\tregis \t=\tdb(query).count()\n\tprint regis\n\tx=1\n\tif regis%paginate == 0:\n\t\tx=0\n\t#\t\n\tcon = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)\n\t\n\treturn response.render("initial/list_emprestimo2.html", con=con,\n\t\tend=end, paginacao=\'on\', regis=regis, paginate=paginate, x=x)\n\ndef emprestimo_agt():\n\tresponse.title = "Emprestimos"\n\tuser = session.auth.user.username\n\tquery = (db.emprestimo.id_empresa == db.empresa.id) &\\\n\t(db.emprestimo.vendedora == user)\n\t#\n\tpaginate \t=\t10\n\tif not request.vars.page:\n\t\tredirect(URL(vars={\'page\':1}))\n\telse:\n\t\tpage \t=\tint(request.vars.page)\n\tstart \t=\t(page-1)*paginate\n\tend \t=\tpage*paginate\n\tregis \t=\tdb(query).count()\n\tprint regis\n\tx=1\n\tif regis%paginate == 0:\n\t\tx=0\n\t#\n\n\tcon = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)\n\treturn response.render("initial/list_emprestimo2.html", con=con,\n\t\tend=end, paginacao=\'on\', regis=regis, paginate=paginate, x=x)\n\n\ndef detalhes_emprestimo():\n\tresponse.title = "Detalhes"\n\tid_det = request.vars.id_det\n\tquery=((db.emprestimo.id == id_det) & (db.emprestimo.id_empresa == db.empresa.id))\n\tcon=db(query).select()\n\tprint con\n\n\treturn response.render("initial/detalhes_emprestimo.html", con=con)\n\ndef busca_emp_pend():\n\tresponse.title = "Emprestimos pendentes"\n\tquery = (db.emprestimo.id_empresa == db.empresa.id) \\\n\t\t& (db.emprestimo.estado == None) & (db.emprestimo.telefone == "")\\\n\t\t& (db.emprestimo.cpf == request.vars.cpf)\n\n\tcon = db(query).select(orderby=db.emprestimo.id)\n\t\n\treturn response.render("initial/list_emprestimo.html", con=con,\n\t\t\t\t\t\t\t\t\t\t\t\t\tpaginacao=\'off\')\n\ndef busca_emp_total():\n\tresponse.title = "Emprestimos pendentes"\n\tquery = (db.emprestimo.id_empresa == db.empresa.id)\\\n\t\t& (db.emprestimo.cpf == request.vars.cpf)\n\n\tcon = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), orderby=db.emprestimo.id)\n\t\n\treturn response.render("initial/list_emprestimo2.html", con=con,\n\t\t\t\t\t\t\t\t\t\t\t\t\tpaginacao=\'off\')\n\n\n\n##---------------------------Situa\xc3\xa7\xc3\xa3o\n@auth.requires_membership(\'supervisor\')\ndef form_situacao():\n\tresponse.title = \'situa\xc3\xa7\xc3\xa3o\'\n\tid_emp = request.vars.id_emp\n\tprint id_emp\n\n\tif id_emp is None:\n\t\tform \t= SQLFORM(db.situacao)\n\telse:\n\t\tquery = db.emprestimo.id == id_emp\n\t\temp =db(query).select(db.emprestimo.id, db.emprestimo.nome)\n\t\temp = emp[0]\n\t\tform \t= SQLFORM(db.situacao)\n\n\tif form.process().accepted:\n\t\tsession.flash=("Registro processado")\n\t\tredirect(URL("situacao?id_emp=%s" %(id_emp))) \n\telse:\n\t\tprint request.vars\n\n\treturn response.render("initial/form_situacao.html", form=form, \n\t\t\t\t\t\t\t\t\t\t\t\temp=emp, id_emp=id_emp)\t\n\n@auth.requires_membership(\'supervisor\')\ndef situacao():\n\tprint request.vars.id_emp\n\tid_emp = request.vars.id_emp\n\tresponse.title = "Situa\xc3\xa7\xc3\xa3o"\n\tquery = (db.situacao.id_emprestimo == db.emprestimo.id) &\\\n\t(db.situacao.id_status == db.status.id) & (db.situacao.id_emprestimo == id_emp)\n\t#\n\tpaginate \t=\t10\n\tif not request.vars.page:\n\t\tredirect(URL(vars={\'page\':1, \'id_emp\':id_emp}))\n\telse:\n\t\tpage \t=\tint(request.vars.page)\n\tstart \t=\t(page-1)*paginate\n\tend \t=\tpage*paginate\n\tregis \t=\tdb(query).count()\n\t#print regis\n\tx=1\n\tif regis%paginate == 0:\n\t\tx=0\n\t\n\tcon = db(query).select(limitby=(start,end), orderby=db.situacao.id)\n\t#con = db(query).select()\n\t\n\treturn response.render("initial/list_situacao.html", con=con, id_emp=id_emp, \n\t\tx=x, end=end, paginacao=\'on\', regis=regis, paginate=paginate) \t\n\n@auth.requires_membership(\'admin\')\ndef users():\n\tprint \'users\'\n\tgrid \t= SQLFORM.grid(db.auth_user, csv=False, user_signature=False)\n\t#print usuarios\n\t\n\treturn response.render("initial/show_grid.html", grid=grid)\n\ndef group():\n\tprint \'users\'\n\tgrid \t= SQLFORM.grid(db.auth_group, user_signature=False)\n\t#print usuarios\n\t\n\treturn response.render("initial/show_grid.html", grid=grid)\n\ndef membership():\n\tprint \'users\'\n\tgrid \t= SQLFORM.grid(db.auth_membership, user_signature=False)\n\t#print usuarios\n\t\n\treturn response.render("initial/show_grid.html", grid=grid)\n\ndef delete():\n\tfuncao \t=\trequest.vars[\'tabela\']\n\tid_tab\t=\trequest.vars[\'id_tab\']\n\tprint funcao\n\tprint id_tab\n\tif funcao \t== "empresa":\n\t\ttabela \t=\t db.empresa.id\n\tif funcao \t==\t"status":\n\t\ttabela \t= \tdb.status.id\n\tif funcao \t==\t"emprestimo":\n\t\ttabela \t= \tdb.emprestimo.id\n\tif funcao \t==\t"situacao":\n\t\ttabela \t= \tdb.situacao.id\n\tif funcao \t==\t"funcao":\n\t\ttabela \t= \tdb.funcao.id\n\tif funcao \t==\t"banco":\n\t\ttabela \t= \tdb.banco.id\n\tif funcao \t==\t"orgao":\n\t\ttabela \t= \tdb.orgao.id\n\n\tdb(tabela == id_tab).delete()\t\n\tredirect(URL(funcao))\n\ndef lembrete(): \n\tquery = (db.auth_user.id == session.auth.user.id)\n\tdb(query).update(lembrete=request.vars.lembrete)\n\tredirect(URL(form_emprestimo))\n\t\n\n\n\n\t\n\n\n\n\nresponse._vars=response._caller(form_banco)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__getslice__'
+p12
+S"<method-wrapper '__getslice__' of exceptions.SyntaxError object>"
+p13
+sS'text'
+p14
+S'None'
+p15
+sS'__str__'
+p16
+S"<method-wrapper '__str__' of exceptions.SyntaxError object>"
+p17
+sS'__reduce__'
+p18
+S'<built-in method __reduce__ of exceptions.SyntaxError object>'
+p19
+sS'__dict__'
+p20
+S'{}'
+p21
+sS'__sizeof__'
+p22
+S'<built-in method __sizeof__ of exceptions.SyntaxError object>'
+p23
+sS'__init__'
+p24
+S"<method-wrapper '__init__' of exceptions.SyntaxError object>"
+p25
+sS'__setattr__'
+p26
+S"<method-wrapper '__setattr__' of exceptions.SyntaxError object>"
+p27
+sS'__reduce_ex__'
+p28
+S'<built-in method __reduce_ex__ of exceptions.SyntaxError object>'
+p29
+sS'__new__'
+p30
+S'<built-in method __new__ of type object>'
+p31
+sS'__format__'
+p32
+S'<built-in method __format__ of exceptions.SyntaxError object>'
+p33
+sS'__class__'
+p34
+S"<type 'exceptions.SyntaxError'>"
+p35
+sS'filename'
+p36
+S'None'
+p37
+sS'lineno'
+p38
+S'None'
+p39
+sS'msg'
+p40
+S"'widget cannot determine options of banco.commenata'"
+p41
+sS'__doc__'
+p42
+S"'Invalid syntax.'"
+p43
+sS'__getitem__'
+p44
+S"<method-wrapper '__getitem__' of exceptions.SyntaxError object>"
+p45
+sS'__setstate__'
+p46
+S'<built-in method __setstate__ of exceptions.SyntaxError object>'
+p47
+sS'__getattribute__'
+p48
+S"<method-wrapper '__getattribute__' of exceptions.SyntaxError object>"
+p49
+sS'print_file_and_line'
+p50
+S'None'
+p51
+sS'args'
+p52
+S"('widget cannot determine options of banco.commenata',)"
+p53
+sS'__subclasshook__'
+p54
+S'<built-in method __subclasshook__ of type object>'
+p55
+sS'offset'
+p56
+S'None'
+p57
+sS'__unicode__'
+p58
+S'<built-in method __unicode__ of exceptions.SyntaxError object>'
+p59
+sS'__delattr__'
+p60
+S"<method-wrapper '__delattr__' of exceptions.SyntaxError object>"
+p61
+sS'__repr__'
+p62
+S"<method-wrapper '__repr__' of exceptions.SyntaxError object>"
+p63
+sS'__hash__'
+p64
+S"<method-wrapper '__hash__' of exceptions.SyntaxError object>"
+p65
+ssS'evalue'
+p66
+S'widget cannot determine options of banco.commenata'
+p67
+sS'request'
+p68
+cgluon.html
+XML_unpickle
+p69
+(S's\xf7N\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">ajax</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">application</td><td valign="top">:</td><td><div>ubercred</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0x3082998&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cid</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">client</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">controller</td><td valign="top">:</td><td><div>initial</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_admin</td><td valign="top">:</td><td><div>127.0.0.1-af33a4fc-73af-40fa-ac20-220e05eb80d0<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_ubercred</td><td valign="top">:</td><td><div>127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">env</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/fernado/web2py/tronco/applications/ubercred/&#x27;, &#x27;/home/fernado/web2py/tronco/applications/admin/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x3076290: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;fernando-workstation&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/fernado/web2py/tronco&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;123456&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_encoding</td><td valign="top">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_language</td><td valign="top">:</td><td><div>pt-BR,pt;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cache_control</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_connection</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cookie</td><td valign="top">:</td><td><div>session_id_ubercred=127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a; session_id_admin=127.0.0.1-af33a4fc-73af-40fa-ac20-220e05eb80d0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_host</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_user_agent</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>::1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>fernando-workstation</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path_info</td><td valign="top">:</td><td><div>/ubercred/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">query_string</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_addr</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_port</td><td valign="top">:</td><td><div>34662</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_method</td><td valign="top">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_uri</td><td valign="top">:</td><td><div>/ubercred/initial/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">script_name</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_name</td><td valign="top">:</td><td><div>fernando-workstation</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_port</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_protocol</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_software</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_original_uri</td><td valign="top">:</td><td><div>/ubercred/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_path</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div>2.5.1-stable+timestamp.2013.06.06.15.39.19</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f3f9ef44270&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x2fcad50&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_input</td><td valign="top">:</td><td><div>&lt;socket._fileobject object at 0x7f3f8c211050&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_version</td><td valign="top">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">extension</td><td valign="top">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">folder</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco/applications/ubercred/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">function</td><td valign="top">:</td><td><div>form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">get_vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">global_settings</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/fernado/web2py/tronco/applications/ubercred/&#x27;, &#x27;/home/fernado/web2py/tronco/applications/admin/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x3076290: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;fernando-workstation&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/fernado/web2py/tronco&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;123456&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>::1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>fernando-workstation</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div>2.5.1-stable+timestamp.2013.06.06.15.39.19</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_https</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_local</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_restful</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">now</td><td valign="top">:</td><td><div>datetime.datetime(2014, 4, 14, 17, 2, 54, 606110)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">post_vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">url</td><td valign="top">:</td><td><div>/ubercred/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">utcnow</td><td valign="top">:</td><td><div>datetime.datetime(2014, 4, 14, 20, 2, 54, 606158)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">uuid</td><td valign="top">:</td><td><div>ubercred/127.0.0.1.2014-04-14.17-02-54.ccc135c1-c46c-4bd4-a361-8189f8cf72d9</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">environ</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_ENCODING</td><td valign="top">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_LANGUAGE</td><td valign="top">:</td><td><div>pt-BR,pt;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CACHE_CONTROL</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CONNECTION</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_COOKIE</td><td valign="top">:</td><td><div>session_id_ubercred=127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a; session_id_admin=127.0.0.1-af33a4fc-73af-40fa-ac20-220e05eb80d0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_HOST</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_USER_AGENT</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">PATH_INFO</td><td valign="top">:</td><td><div>/ubercred/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">QUERY_STRING</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_ADDR</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_PORT</td><td valign="top">:</td><td><div>34662</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_METHOD</td><td valign="top">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_URI</td><td valign="top">:</td><td><div>/ubercred/initial/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SCRIPT_NAME</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_NAME</td><td valign="top">:</td><td><div>fernando-workstation</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PORT</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PROTOCOL</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_SOFTWARE</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">WEB2PY_ORIGINAL_URI</td><td valign="top">:</td><td><div>/ubercred/form_banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f3f9ef44270&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x2fcad50&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.input</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0x3082998&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.version</td><td valign="top">:</td><td><div>1</div></td></tr></table></div></td></tr></table></div></td></tr></table></div>'
+tRp70
+sS'frames'
+p71
+(lp72
+(dp73
+S'file'
+p74
+S'/home/fernado/web2py/tronco/gluon/restricted.py'
+p75
+sS'dump'
+p76
+(dp77
+S'environment'
+p78
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}"
+p79
+sS'ccode'
+p80
+S'<code object <module> at 0x7f3f802afc30, file "/...cations/ubercred/controllers/initial.py", line 2>'
+p81
+ssS'lnum'
+p82
+I212
+sS'lines'
+p83
+(dp84
+I207
+S'    try:'
+p85
+sI208
+S'        if isinstance(code, types.CodeType):'
+p86
+sI209
+S'            ccode = code'
+p87
+sI210
+S'        else:'
+p88
+sI211
+S'            ccode = compile2(code, layer)'
+p89
+sI212
+S'        exec ccode in environment'
+p90
+sI213
+S'    except HTTP:'
+p91
+sI214
+S'        raise'
+p92
+sI215
+S'    except RestrictedError:'
+p93
+sI216
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p94
+ssS'call'
+p95
+S"(code='# coding=UTF-8\\nimport  json\\nfrom datetime import...\\n\\n\\n\\n\\nresponse._vars=response._caller(form_banco)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}, layer='/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py')"
+p96
+sS'func'
+p97
+S'restricted'
+p98
+sa(dp99
+g74
+S'/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py'
+p100
+sg76
+(dp101
+sg82
+I508
+sg83
+(dp102
+I497
+S'\tdb(query).update(lembrete=request.vars.lembrete)'
+p103
+sI498
+S'\tredirect(URL(form_emprestimo))'
+p104
+sI499
+S''
+sI500
+S''
+sI501
+S''
+sI502
+S''
+sI503
+S''
+sI504
+S''
+sI505
+S''
+sI506
+S''
+ssg95
+S'()'
+p105
+sg97
+S'<module>'
+p106
+sa(dp107
+g74
+S'/home/fernado/web2py/tronco/gluon/globals.py'
+p108
+sg76
+(dp109
+S'self'
+p110
+S'undefined'
+p111
+sS'f'
+S'<function form_banco>'
+p112
+ssg82
+I194
+sg83
+(dp113
+I192
+S"        self.delimiters = ('{{', '}}')"
+p114
+sI193
+S'        self._vars = None'
+p115
+sI194
+S'        self._caller = lambda f: f()'
+p116
+sI195
+S'        self._view_environment = None'
+p117
+sI196
+S'        self._custom_commit = None'
+p118
+sI197
+S'        self._custom_rollback = None'
+p119
+sI198
+S''
+sI189
+S'        self.menu = []             # used by the default view layout'
+p120
+sI190
+S'        self.files = []            # used by web2py_ajax.html'
+p121
+sI191
+S'        self.generic_patterns = []  # patterns to allow generic views'
+p122
+ssg95
+S'(f=<function form_banco>)'
+p123
+sg97
+S'<lambda>'
+p124
+sa(dp125
+g74
+S'/home/fernado/web2py/tronco/gluon/tools.py'
+p126
+sg76
+(dp127
+S'action'
+p128
+S'<function form_banco>'
+p129
+sS'a'
+S'()'
+p130
+sS'b'
+g21
+ssg82
+I3022
+sg83
+(dp131
+I3017
+S'                    flag = condition'
+p132
+sI3018
+S'                if not flag:'
+p133
+sI3019
+S'                    current.session.flash = self.messages.access_denied'
+p134
+sI3020
+S'                    return call_or_redirect('
+p135
+sI3021
+S'                        self.settings.on_failed_authorization)'
+p136
+sI3022
+S'                return action(*a, **b)'
+p137
+sI3023
+S'            f.__doc__ = action.__doc__'
+p138
+sI3024
+S'            f.__name__ = action.__name__'
+p139
+sI3025
+S'            f.__dict__.update(action.__dict__)'
+p140
+sI3026
+S'            return f'
+p141
+ssg95
+S'(*a=(), **b={})'
+p142
+sg97
+S'f'
+sa(dp143
+g74
+S'/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py'
+p144
+sg76
+(dp145
+S'global db'
+p146
+S'<DAL uri="postgres:pg8000:******@127.0.0.1/ubercred">'
+p147
+sS'global SQLFORM'
+p148
+S"<class 'gluon.sqlhtml.SQLFORM'>"
+p149
+sS'db.banco'
+p150
+S'<Table banco (id,nome,commenata)>'
+p151
+sS'form'
+p152
+g111
+ssg82
+I160
+sg83
+(dp153
+I160
+S'\t\tform \t= SQLFORM(db.banco)'
+p154
+sI161
+S'\telse:'
+p155
+sI162
+S'\t\tform \t= SQLFORM(db.banco, id_edit)'
+p156
+sI163
+S''
+sI164
+S'\tif form.process().accepted:'
+p157
+sI155
+S'def form_banco():'
+p158
+sI156
+S"\tresponse.title = 'banco'"
+p159
+sI157
+S"\tid_edit\t= request.vars['id_edit']"
+p160
+sI158
+S''
+sI159
+S'\tif id_edit is None:'
+p161
+ssg95
+S'()'
+p162
+sg97
+S'form_banco'
+p163
+sa(dp164
+g74
+S'/home/fernado/web2py/tronco/gluon/sqlhtml.py'
+p165
+sg76
+(dp166
+S'default'
+p167
+S'None'
+p168
+sS'field'
+p169
+S'<gluon.dal.Field object>'
+p170
+sS'field.widget'
+p171
+S"<bound method type.widget of <class 'gluon.sqlhtml.MultipleOptionsWidget'>>"
+p172
+sS'inp'
+p173
+S'<gluon.html.INPUT object>'
+p174
+ssg82
+I1131
+sg83
+(dp175
+I1126
+S'                if field.widget:'
+p176
+sI1127
+S'                    inp = field.widget(field, default, upload)'
+p177
+sI1128
+S'                else:'
+p178
+sI1129
+S'                    inp = self.widgets.upload.widget(field, default, upload)'
+p179
+sI1130
+S'            elif field.widget:'
+p180
+sI1131
+S'                inp = field.widget(field, default)'
+p181
+sI1132
+S"            elif field.type == 'boolean':"
+p182
+sI1133
+S'                inp = self.widgets.boolean.widget(field, default)'
+p183
+sI1134
+S'                if default:'
+p184
+sI1135
+S"                    inpval = 'checked'"
+p185
+ssg95
+S"(self=<gluon.sqlhtml.SQLFORM object>, table=<Table banco (id,nome,commenata)>, record=None, deletable=False, linkto=None, upload=None, fields=['id', 'nome', 'commenata'], labels=None, col3={}, submit_button='Submit', delete_label='Check to delete', showid=True, readonly=False, comments=True, keepopts=[], ignore_rw=False, record_id=None, formstyle='table3cols', buttons=['submit'], separator=': ', **attributes={})"
+p186
+sg97
+g24
+sa(dp187
+g74
+S'/home/fernado/web2py/tronco/gluon/sqlhtml.py'
+p188
+sg76
+(dp189
+S'field'
+p190
+S'<gluon.dal.Field object>'
+p191
+sS'global OptionsWidget'
+p192
+S"<class 'gluon.sqlhtml.OptionsWidget'>"
+p193
+sS'OptionsWidget.widget'
+p194
+S"<bound method type.widget of <class 'gluon.sqlhtml.OptionsWidget'>>"
+p195
+sS'value'
+p196
+S'None'
+p197
+sS'attributes'
+p198
+S"{'_multiple': True, '_size': 5}"
+p199
+ssg82
+I366
+sg83
+(dp200
+I361
+S'            be shown'
+p201
+sI362
+S'        """'
+p202
+sI363
+S''
+sI364
+S'        attributes.update(_size=size, _multiple=True)'
+p203
+sI365
+S''
+sI366
+S'        return OptionsWidget.widget(field, value, **attributes)'
+p204
+sI367
+S''
+sI368
+S''
+sI369
+S'class RadioWidget(OptionsWidget):'
+p205
+sI370
+S''
+ssg95
+S"(cls=<class 'gluon.sqlhtml.MultipleOptionsWidget'>, field=<gluon.dal.Field object>, value=None, size=5, **attributes={'_multiple': True, '_size': 5})"
+p206
+sg97
+S'widget'
+p207
+sa(dp208
+g74
+S'/home/fernado/web2py/tronco/gluon/sqlhtml.py'
+p209
+sg76
+(dp210
+S'field'
+p211
+S'<gluon.dal.Field object>'
+p212
+ssg82
+I281
+sg83
+(dp213
+I276
+S'        if requires:'
+p214
+sI277
+S"            if hasattr(requires[0], 'options'):"
+p215
+sI278
+S'                options = requires[0].options()'
+p216
+sI279
+S'            else:'
+p217
+sI280
+S'                raise SyntaxError('
+p218
+sI281
+S"                    'widget cannot determine options of %s' % field)"
+p219
+sI282
+S'        opts = [OPTION(v, _value=k) for (k, v) in options]'
+p220
+sI283
+S'        return SELECT(*opts, **attr)'
+p221
+sI284
+S''
+sI285
+S''
+ssg95
+S"(cls=<class 'gluon.sqlhtml.OptionsWidget'>, field=<gluon.dal.Field object>, value=None, **attributes={'_multiple': True, '_size': 5})"
+p222
+sg97
+g207
+sasS'pyver'
+p223
+S'Python 2.7.3: /usr/bin/python (prefix: /usr)'
+p224
+sS'session'
+p225
+g69
+(S's\xac\n\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">auth</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">expiration</td><td valign="top">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">hmac_key</td><td valign="top">:</td><td><div>cbf62b08-f1fd-426e-a19c-4a80caffa5c3</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_visit</td><td valign="top">:</td><td><div>datetime.datetime(2014, 4, 14, 17, 1, 10, 511368)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remember</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">email</td><td valign="top">:</td><td><div>admin@admin.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">first_name</td><td valign="top">:</td><td><div>admin</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">funcao</td><td valign="top">:</td><td><div>admin</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">id</td><td valign="top">:</td><td><div>1L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">id_empresa</td><td valign="top">:</td><td><div>1L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_name</td><td valign="top">:</td><td><div>admin</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">lembrete</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_id</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_key</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">reset_password_key</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">supervisor</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">username</td><td valign="top">:</td><td><div>admin</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user_groups</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">3</td><td valign="top">:</td><td><div>admin</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">raiz</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco</div></td></tr></table></div>'
+tRp226
+sS'etype'
+p227
+S"<type 'exceptions.SyntaxError'>"
+p228
+sS'date'
+p229
+S'Mon Apr 14 17:02:54 2014'
+p230
+sS'response'
+p231
+g69
+(S's\xb4\x1b\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0x3082570&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_ubercred</td><td valign="top">:</td><td><div>127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">delimiters</td><td valign="top">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">files</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generic_patterns</td><td valign="top">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">google_analytics_id</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">headers</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">X-Powered-By</td><td valign="top">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">menu</td><td valign="top">:</td><td><div><table><tr><td><div><table><tr><td><div>Empr\xc3\xa9stimos</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/form_banco</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Todos</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/emprestimo2</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Pendentes</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/emprestimo</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Empresa</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/empresa</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Status</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/status</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">menu2</td><td valign="top">:</td><td><div><table><tr><td><div><table><tr><td><div><span class="dropdown-toggle">Login</span></div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Usu\xc3\xa1rios</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/users</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Logout</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/ubercred/user/logout</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">meta</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">author</td><td valign="top">:</td><td><div>ForIP</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">description</td><td valign="top">:</td><td><div>Ubercred</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generator</td><td valign="top">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">keywords</td><td valign="top">:</td><td><div>web2py, python, framework</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">models_to_run</td><td valign="top">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^initial/\\w+\\.py$</div></td></tr><tr><td><div>^initial/form_banco/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">postprocessing</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_cookie_expires</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_data_name</td><td valign="top">:</td><td><div>session_data_ubercred</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_file</td><td valign="top">:</td><td><div>&lt;open file &#x27;/home/fernado/web2py/tronco/applications/ubercred/sessions/127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a&#x27;, mode &#x27;rb+&#x27; at 0x7f3f8011c930&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_filename</td><td valign="top">:</td><td><div>/home/fernado/web2py/tronco/applications/ubercred/sessions/127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id</td><td valign="top">:</td><td><div>127.0.0.1-4da967e0-009a-4ba8-96e1-0c6e5d1da34a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_name</td><td valign="top">:</td><td><div>session_id_ubercred</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_locked</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_new</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_storage_type</td><td valign="top">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">status</td><td valign="top">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">subtitle</td><td valign="top">:</td><td><div>customize me!</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">title</td><td valign="top">:</td><td><div>banco</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">view</td><td valign="top">:</td><td><div>initial/form_banco.html</div></td></tr></table></div>'
+tRp232
+sS'locals'
+p233
+(dp234
+S'attr'
+p235
+S"{'_class': 'generic-widget', '_id': 'banco_commenata', '_multiple': True, '_name': 'commenata', '_size': 5, 'requires': [<gluon.validators.IS_LENGTH object>], 'value': None}"
+p236
+sS'default'
+p237
+S"{'value': None}"
+p238
+sS'value'
+p239
+S'None'
+p240
+sS'field'
+p241
+S'<gluon.dal.Field object>'
+p242
+sS'attributes'
+p243
+S"{'_multiple': True, '_size': 5}"
+p244
+sS'requires'
+p245
+S'[<gluon.validators.IS_LENGTH object>]'
+p246
+sS'cls'
+p247
+S"<class 'gluon.sqlhtml.OptionsWidget'>"
+p248
+sssS'traceback'
+p249
+S'Traceback (most recent call last):\n  File "/home/fernado/web2py/tronco/gluon/restricted.py", line 212, in restricted\n    exec ccode in environment\n  File "/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py", line 508, in <module>\n  File "/home/fernado/web2py/tronco/gluon/globals.py", line 194, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/fernado/web2py/tronco/gluon/tools.py", line 3022, in f\n    return action(*a, **b)\n  File "/home/fernado/web2py/tronco/applications/ubercred/controllers/initial.py", line 160, in form_banco\n    form \t= SQLFORM(db.banco)\n  File "/home/fernado/web2py/tronco/gluon/sqlhtml.py", line 1131, in __init__\n    inp = field.widget(field, default)\n  File "/home/fernado/web2py/tronco/gluon/sqlhtml.py", line 366, in widget\n    return OptionsWidget.widget(field, value, **attributes)\n  File "/home/fernado/web2py/tronco/gluon/sqlhtml.py", line 281, in widget\n    \'widget cannot determine options of %s\' % field)\nSyntaxError: widget cannot determine options of banco.commenata\n'
+p250
+s.

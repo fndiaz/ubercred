@@ -1,0 +1,48 @@
+{{extend 'layout.html'}}
+
+
+{{block center}}
+
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_orgao')}}" >Adicionar</button>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Orgão</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{for dado in orgao:}}
+        <tr>
+            <td width="65%", style="border:1px solid #ADC2CC">{{=dado.nome}}</td>
+            <td style="border:1px solid #ADC2CC">
+                <a href="{{=URL(a='ubercred', c='initial', f='form_orgao')}}?id_edit={{=dado.id}}">
+                    <i class=" icon-edit"></i></a> &nbsp;&nbsp;
+
+                <a class="link" data-tabela="orgao" data-nome="{{=dado.nome}}" data-value="{{=dado.id}}" href="#">
+                    <i class=" icon-trash"></i></a>
+            </td>
+        </tr>
+    {{pass}}
+    </tbody>
+</table>
+
+<script>
+var links = document.querySelectorAll('.link');
+for (x in links) {
+    links[x].onclick = function() { 
+    var data_attr = this.dataset;
+    //alert(data_attr.value);
+    var id   = data_attr.value;
+    var nome = data_attr.nome;
+    var tabela= data_attr.tabela;
+    decisao = confirm("Tem certeza que deseja remover o item "+nome);
+        if(decisao){
+            location.href="{{=URL(a='ubercred', c='initial', f='delete')}}?id_tab="+id+"&tabela="+tabela+";"
+        }
+    return false;
+    }
+}
+</script>
+
+{{end}}

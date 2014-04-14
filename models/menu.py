@@ -26,7 +26,17 @@ response.google_analytics_id = None
 #print session.auth
 if session.auth == None:
     response.menu =[]
-else:    
+else:
+    if session.auth.user.funcao == "admin":
+        response.menu = [
+        #(T('Empréstimos'), False, URL("initial", "emprestimo2"), []),
+        (T('Empréstimos'), False, URL(""), [
+            (T('Todos'), False, URL("initial", "emprestimo2")),
+            (T('Pendentes'), False, URL("initial", "emprestimo"))
+        ]),
+        (T('Empresa'), False, URL("initial", "empresa"), []),
+        (T('Status'), False, URL("initial", "status"), [])
+        ]    
     if session.auth.user.funcao == "supervisor":
         response.menu = [
         #(T('Empréstimos'), False, URL("initial", "emprestimo2"), []),

@@ -35,13 +35,24 @@ db.define_table("situacao",
 	Field("id_status", db.status)
 	)
 
+db.define_table("funcao",
+	Field("nome"),
+	)
+
+db.define_table("banco",
+	Field("nome"),
+	)
+
+db.define_table("orgao",
+	Field("nome"),
+	)
 
 if not db(db.estados).count():
 	print '>>>>>>'
 	import  json
 	from pprint import pprint
-	print json.dumps("%s/applications/ubercred/views/estados.json" %(raiz))
-	with open('%s/applications/ubercred/views/estados.json' %(raiz)) as json_data:
+	print json.dumps("%s/applications/ubercred/views/estados.json" %(session.raiz))
+	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
 		json_data = json.load(json_data)
 		print 'ow'
 		#print json_data['Nome']
@@ -55,11 +66,15 @@ if not db(db.empresa).count():
 if not db(db.auth_group).count():
 	auth.add_group('supervisor')
 	auth.add_group('atendente')
+	auth.add_group('admin')
 
 if not db(db.auth_user).count():
 		db.auth_user.insert(first_name="admin",last_name="admin",username="admin"\
 		,funcao="supervisor",id_empresa="1",email="admin@admin.com",\
 		password=db.auth_user.password.validate("admin123")[0])
+
+
+
 
 
 

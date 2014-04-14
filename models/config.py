@@ -68,15 +68,16 @@ db.define_table("empresa",
 	Field("nome", "string"),
 	format="%(nome)s")
 
+
 #authfields
 auth.settings.extra_fields['auth_user'] = [
-	Field("funcao", requires=IS_IN_SET(["agente", "supervisor"])),
+	Field("funcao", requires=IS_IN_SET(["agente", "supervisor", "admin"])),
 	Field("id_empresa", db.empresa),
+	Field("supervisor"),
 	Field("lembrete", 'text'),
 #	Field("photo", "upload"),
 #	Field("gender", requires=IS_IN_SET(["masculino","feminino"]))
 ]
-
 
 #janrain
 #from gluon.contrib.login_methods.rpx_account import use_janrain
@@ -94,7 +95,7 @@ response.title= "titulo response"
 response.meta.keywords= "chave, outra, e outra"
 
 if not 'raiz' in session:
-    session.raiz = '/home/fernando/Documentos/web2py/atual'
+    session.raiz = '/home/fernado/web2py/tronco'
 
 #if not 'ano' in session:
 #    session.ano = '0'

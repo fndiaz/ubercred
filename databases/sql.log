@@ -1,0 +1,162 @@
+timestamp: 2014-04-14T10:41:28.646940
+CREATE TABLE empresa(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+timestamp: 2014-04-14T10:43:01.085767
+CREATE TABLE empresa(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T10:43:01.244769
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    username VARCHAR(128),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512),
+    funcao VARCHAR(512),
+    id_empresa INTEGER REFERENCES empresa (id) ON DELETE CASCADE,
+    lembrete TEXT
+);
+success!
+timestamp: 2014-04-14T10:43:01.372356
+CREATE TABLE auth_group(
+    id SERIAL PRIMARY KEY,
+    role VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-04-14T10:43:01.508049
+CREATE TABLE auth_membership(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-04-14T10:43:01.607751
+CREATE TABLE auth_permission(
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(512),
+    table_name VARCHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2014-04-14T10:43:01.741124
+CREATE TABLE auth_event(
+    id SERIAL PRIMARY KEY,
+    time_stamp TIMESTAMP,
+    client_ip VARCHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-04-14T10:43:01.900579
+CREATE TABLE auth_cas(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service VARCHAR(512),
+    ticket VARCHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2014-04-14T10:43:02.046643
+CREATE TABLE status(
+    id SERIAL PRIMARY KEY,
+    status VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T10:43:02.179990
+CREATE TABLE estados(
+    id SERIAL PRIMARY KEY,
+    sigla VARCHAR(512),
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T10:43:02.343748
+CREATE TABLE emprestimo(
+    id SERIAL PRIMARY KEY,
+    data_emp TIMESTAMP,
+    nome VARCHAR(60),
+    cpf VARCHAR(60),
+    telefone VARCHAR(30),
+    estado INTEGER REFERENCES estados (id) ON DELETE CASCADE,
+    cidade VARCHAR(512),
+    valor_parcela FLOAT8,
+    valor_total FLOAT8,
+    orgao VARCHAR(512),
+    operacao VARCHAR(512),
+    vendedora VARCHAR(512),
+    n_parcelas INTEGER,
+    id_empresa INTEGER REFERENCES empresa (id) ON DELETE CASCADE,
+    banco VARCHAR(512),
+    contrato VARCHAR(512),
+    adesao VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T10:43:02.473173
+CREATE TABLE situacao(
+    id SERIAL PRIMARY KEY,
+    data_sit DATE,
+    obs TEXT,
+    id_emprestimo INTEGER REFERENCES emprestimo (id) ON DELETE CASCADE,
+    id_status INTEGER REFERENCES status (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-04-14T11:00:42.075399
+ALTER TABLE auth_user ADD supervisor VARCHAR(512);
+timestamp: 2014-04-14T14:58:26.348451
+CREATE TABLE funcao(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T14:58:26.520797
+CREATE TABLE banco(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T14:58:26.663400
+CREATE TABLE orgao(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-14T17:01:10.621458
+ALTER TABLE banco ADD commenta VARCHAR(512);
+timestamp: 2014-04-14T17:02:54.698879
+ALTER TABLE banco ADD commenata VARCHAR(512);
+timestamp: 2014-04-14T17:02:54.704079
+ALTER TABLE banco DROP COLUMN commenta;
+timestamp: 2014-04-14T17:10:09.594471
+ALTER TABLE banco ADD commenata__tmp TEXT;
+UPDATE banco SET commenata__tmp=commenata;
+ALTER TABLE banco DROP COLUMN commenata;
+ALTER TABLE banco ADD commenata TEXT;
+UPDATE banco SET commenata=commenata__tmp;
+ALTER TABLE banco DROP COLUMN commenata__tmp;
+timestamp: 2014-04-14T17:11:49.232738
+ALTER TABLE emprestimo ADD telefone__tmp TEXT;
+UPDATE emprestimo SET telefone__tmp=telefone;
+ALTER TABLE emprestimo DROP COLUMN telefone;
+ALTER TABLE emprestimo ADD telefone TEXT;
+UPDATE emprestimo SET telefone=telefone__tmp;
+ALTER TABLE emprestimo DROP COLUMN telefone__tmp;
+timestamp: 2014-04-14T17:11:49.292734
+ALTER TABLE banco DROP COLUMN commenata;
+timestamp: 2014-04-14T17:13:14.134302
+ALTER TABLE emprestimo ADD telefone__tmp VARCHAR(30);
+UPDATE emprestimo SET telefone__tmp=telefone;
+ALTER TABLE emprestimo DROP COLUMN telefone;
+ALTER TABLE emprestimo ADD telefone VARCHAR(30);
+UPDATE emprestimo SET telefone=telefone__tmp;
+ALTER TABLE emprestimo DROP COLUMN telefone__tmp;
