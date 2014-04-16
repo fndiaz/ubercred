@@ -1,0 +1,58 @@
+{{extend 'layout.html'}}
+
+
+{{block center}}
+
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_users')}}" >Adicionar</button>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Username</th>
+            <th>Função</th>
+            <th>Empresa</th>
+            <th>$-Meta</th>
+            <th>Supervisor</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{for dado in usuarios:}}
+        <tr>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.auth_user.first_name}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.auth_user.username}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.auth_user.funcao}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.empresa.nome}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.auth_user.meta}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.auth_user.supervisor}}</td>
+            <td style="border:1px solid #ADC2CC">
+                <a href="{{=URL(a='ubercred', c='initial', f='form_users')}}?id_edit={{=dado.auth_user.id}}">
+                    <i class=" icon-edit"></i></a> &nbsp;&nbsp;
+
+                <a class="link" data-tabela="auth_user" data-nome="{{=dado.auth_user.username}}" data-value="{{=dado.auth_user.id}}" href="#">
+                    <i class=" icon-trash"></i></a>
+            </td>
+        </tr>
+    {{pass}}
+    </tbody>
+</table>
+
+<script>
+var links = document.querySelectorAll('.link');
+for (x in links) {
+    links[x].onclick = function() { 
+    var data_attr = this.dataset;
+    //alert(data_attr.value);
+    var id   = data_attr.value;
+    var nome = data_attr.nome;
+    var tabela= data_attr.tabela;
+    decisao = confirm("Tem certeza que deseja remover o item "+nome);
+        if(decisao){
+            location.href="{{=URL(a='ubercred', c='initial', f='delete')}}?id_tab="+id+"&tabela="+tabela+";"
+        }
+    return false;
+    }
+}
+</script>
+
+{{end}}

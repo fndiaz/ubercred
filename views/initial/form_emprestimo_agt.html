@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 
 {{block center}}
-<a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="{{=lem}}" data-original-title="Nota" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Lembrete</a>
+<a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="{{=lem}}" data-original-title="Nota" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Agendamento</a>
 
 
 
@@ -9,6 +9,13 @@
 <div class="span5">
 <div class="well">
 {{=form.custom.begin}}
+
+<div>
+<label>orgão:</label> 
+<div>{{=form.custom.widget.orgao}}</div>
+<br>
+</div>
+
 <div>
 <label>data:</label>
 <div><input class="" id="emprestimo_data_emp" name="data_emp" type="text" value="{{=date}}" readonly></div>
@@ -27,11 +34,12 @@
 <br>
 </div>
 
-<div style="display: none;">
+<div >
 <label>telefone:</label> 
 <div>{{=form.custom.widget.telefone}}</div>
 <br>
 </div>
+
 
 <div style="display: none;">
 <label>estado:</label> 
@@ -47,9 +55,17 @@
 <br>
 </div>
 
-<div>
-<label>orgão:</label> 
-<div>{{=form.custom.widget.orgao}}</div>
+
+</div><!--well-->
+</div><!--span5-->
+
+
+<div class="span5">
+<div class="well">
+
+<div >
+<label>Forma de envio:</label> 
+<div style="margin-left: -26px;">{{=form.custom.widget.envio}}</div>
 <br>
 </div>
 
@@ -57,16 +73,7 @@
 <label>adesão</label> 
 <div>{{=form.custom.widget.adesao}}</div>
 </div>
-<br><br>
-
-<button type="submit" class="btn btn-primary">Enviar</button>
 <br>
-</div><!--well-->
-</div><!--span5-->
-
-
-<div class="span5">
-<div class="well">
 
 <div>    
 <label>valor total:</label> 
@@ -98,29 +105,35 @@
 <br>
 </div>
 
-
+<div style="display: none;">
 <label>vendedora:</label> 
 <div><input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
 </div>
 <br>
+</div>
 
+<div style="display: none;">
 <label>empresa:</label> 
 <div>
     <select class="generic-widget" id="emprestimo_id_empresa" name="id_empresa" readonly>
         <option value="{{=ls_user[2]}}">{{=ls_user[1]}}</option></select>
 </div>
 <br>
+</div>
 
-<label>função:</label> 
+<div style="display: none;">
+<label>Contrato:</label> 
 <div>{{=form.custom.widget.contrato}}</div>
 <br>
+</div>
 
+<button type="submit" value="testaa" class="btn btn-primary">Enviar</button>
 </div><!--well-->
 </div><!--span-->
 
-
 {{=form.custom.end}}
  
+
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
@@ -129,15 +142,38 @@
   </div>
 
 <div class="modal-body">
-    <p>Digite abaixo…</p>
-    <form action="lembrete" method="POST">
-    <textarea class="text" cols="400" id="id_lembrete" name="lembrete" rows="10">{{=lem}}</textarea> 
+    {{=form_agen.custom.begin}}
+
+    <div style="display: none">
+    <label>Data</label>  
+    {{=form_agen.custom.widget.data_emp}}
+    </div>
+
+    <label>Nome</label>  
+    {{=form_agen.custom.widget.nome}}
+
+    <label>Cpf</label>  
+    {{=form_agen.custom.widget.cpf}}
+    
+    <label>Data2</label>  
+    <input class="" id="agendamento_data_agen" name="data_agen" type="text" value="aaa-mm-dd">
+
+    <label>Telefone</label>  
+    {{=form_agen.custom.widget.telefone}}
+
+    <label>Obs</label>
+    <textarea class="text" cols="100" id="agendamento_obs" name="obs" rows="2"></textarea> 
+    
+    <div style="display: none;">
+    <label>vendedora:</label> 
+    <input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
+    </div>
 </div>
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
     <button type="submit" class="btn btn-primary" name="Pesquisa">Salvar</i></button>
-    </form>
+    {{=form_agen.custom.end}}
 </div>
 
 </div><!--modal-->
@@ -146,7 +182,25 @@
 
 </div><!--margin-->
 
+
 <script>
+  $("#button").click(function(){
+    var nome  = document.getElementById('emprestimo_nome').value;
+    alert(nome);
+    $( agendamento_nome ).val( nome );
+    var data  = document.getElementById('emprestimo_data_emp').value;
+    alert(data);
+    $( agendamento_data_emp ).val( data );
+    var cpf  = document.getElementById('emprestimo_cpf').value;
+    alert(cpf);
+    $( agendamento_cpf ).val( cpf );
+    var tel  = document.getElementById('emprestimo_telefone').value;
+    alert(tel);
+    $( agendamento_telefone ).val( tel );
+
+});
+
+
    $("#emprestimo_estado").change(function(){
     var msg = $("#emprestimo_estado").val();
     //alert(msg);

@@ -14,16 +14,12 @@
 ##Empréstimo
 db.emprestimo.data_emp.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
-
 db.emprestimo.nome.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
-
 db.emprestimo.valor_parcela.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
-
 db.emprestimo.n_parcelas.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
-
 db.emprestimo.valor_total.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
 
@@ -33,12 +29,9 @@ for row in var:
 	orgao.append(row.nome)
 db.emprestimo.orgao.requires = IS_IN_SET(orgao, 
 	error_message=T("valor não pode ser nulo"))
-
 db.emprestimo.cpf.requires = IS_CPF_OR_CNPJ()
-
 db.emprestimo.estado.requires = IS_EMPTY_OR(IS_IN_DB(db, 'estados.id', 
 	'%(sigla)s', error_message=T("valor inválido")))
-
 db.emprestimo.id_empresa.requires = IS_EMPTY_OR(IS_IN_DB(db, 'empresa.id', 
 	'%(nome)s', error_message=T("valor inválido")))
 
@@ -56,14 +49,20 @@ for row in var:
 db.emprestimo.contrato.requires = IS_EMPTY_OR(IS_IN_SET(funcao, 
 	error_message=T("valor inválido")))
 
+
+##Auth_user
 sup=[]
 query=(db.auth_user.funcao == 'supervisor')
 var=db(query).select(db.auth_user.username)
 for row in var:
-	print row.username
+	#print row.username
 	sup.append(row.username)
-print sup
-
+#print sup
 db.auth_user.supervisor.requires = IS_EMPTY_OR(IS_IN_SET(sup, 
 	error_message=T("valor inválido")))
 
+##auth_user
+#db.auth_user.last_name = IS_EMPTY()
+
+##Agendamento
+db.agendamento.cpf.requires = IS_CPF_OR_CNPJ()

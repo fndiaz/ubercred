@@ -1,0 +1,54 @@
+{{extend 'layout.html'}}
+
+{{block center}}
+<div class='row'>
+<div class="span5">
+<div class="well">
+{{=form.custom.begin}}
+
+<label>Nome:</label> 
+<div>{{=form.custom.widget.first_name}}</div>
+<br>
+
+<label>Sobrenome:</label> 
+<div>
+<div>{{=form.custom.widget.last_name}}</div>
+</div>
+<br>
+
+<label>email:</label> 
+<div>{{=form.custom.widget.email}}</div>
+<br>
+
+<label>Username:</label>
+<div>{{=form.custom.widget.username}}</div>
+<br>
+
+<label>Password:</label> 
+<div>{{=form.custom.widget.password}}</div>
+<br>
+
+<label>Função:</label>
+<div>{{=form.custom.widget.funcao}}</div>
+<br>
+
+<label>Empresa:</label>
+<div>{{=form.custom.widget.id_empresa}}</div>
+<br>
+
+<label>Supervisor:</label>
+<div>{{=form.custom.widget.supervisor}}</div>
+<br>
+
+<label>$-Meta:</label>
+<div>{{=form.custom.widget.meta}}</div>
+<br>
+
+<button type="submit" class="btn btn-primary">Enviar</button>
+<br>
+{{=form.custom.end}}
+</div><!--span5-->
+</div>
+</div><!--row-->
+
+{{end}}

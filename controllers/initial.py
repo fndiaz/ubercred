@@ -241,14 +241,26 @@ def form_emprestimo_agt():
 	else:
 		form 	= SQLFORM(db.emprestimo, id_edit)
 
+	form_agen 	= SQLFORM(db.agendamento)
+
 	if form.process().accepted:
+		print request.vars
 		session.flash="Registro processado"
 		redirect(URL("form_emprestimo_agt")) 
 	elif form.errors:
+		print request.vars
+		response.flash=("Ops, algo está errado")
+
+	if form_agen.process().accepted:
+		print request.vars
+		session.flash="Registro processado"
+		redirect(URL("form_emprestimo_agt")) 
+	elif form_agen.errors:
+		print request.vars
 		response.flash=("Ops, algo está errado")
 	
 	return response.render("initial/form_emprestimo_agt.html", 
-				date=date, lem=lem, form=form, ls_user=ls_user)
+		form_agen=form_agen, date=date, lem=lem, form=form, ls_user=ls_user)
 
 @auth.requires_membership('supervisor', 'admin')
 def form_emprestimo_spv():
@@ -295,7 +307,12 @@ def get_user():
 def emprestimo():
 	response.title = "Emprestimos pendentes"
 	query = (db.emprestimo.id_empresa == db.empresa.id) \
-		& (db.emprestimo.estado == None) & (db.emprestimo.telefone == "")
+		& (db.emprestimo.estado == None) & (db.emprestimo.telefone == "")\
+		& (db.emprestimo.vendedora == db.auth_user.username)\
+		& (db.auth_user.supervisor == session.auth.user.username)
+	
+	#query =(db.emprestimo.vendedora == db.auth_user.username)
+	#print db(db.auth_user.id == session.auth.user.username).select(db.auth_user.funcao)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -316,10 +333,12 @@ def emprestimo():
 	return response.render("initial/list_emprestimo.html", con=con, grid=grid,
 		end=end, paginacao="on", regis=regis, paginate=paginate, x=x)
 
-@auth.requires_membership('supervisor', 'admin')
+@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
 def emprestimo2():
 	response.title = "Emprestimos totais"
-	query = (db.emprestimo.id_empresa == db.empresa.id)
+	query = (db.emprestimo.id_empresa == db.empresa.id)\
+		& (db.emprestimo.vendedora == db.auth_user.username)\
+		& (db.auth_user.supervisor == session.auth.user.username)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -450,10 +469,36 @@ def situacao():
 @auth.requires_membership('admin')
 def users():
 	print 'users'
-	grid 	= SQLFORM.grid(db.auth_user, csv=False, user_signature=False)
+	query = (db.auth_user.id_empresa == db.empresa.id)
+	usuarios = db(query).select(orderby=db.auth_user.funcao)
+	#grid 	= SQLFORM.grid(db.auth_user, csv=False, editable=False, 
+	#		deletable=False, details=False, searchable=False)
 	#print usuarios
 	
-	return response.render("initial/show_grid.html", grid=grid)
+	return response.render("initial/list_usuario.html", usuarios=usuarios)
+
+def form_users():
+	response.title = 'Usuários'
+	id_usuario = request.vars['id_edit']
+	
+	if id_usuario is None:
+		form 	=	SQLFORM(db.auth_user)
+	else:
+		form 	=	SQLFORM(db.auth_user, id_usuario)
+
+	form.element(_name='first_name')['_class'] = "form-control"
+	form.element(_name='last_name')['_class'] = "form-control"
+	form.element(_name='email')['_class'] = "form-control"
+	form.element(_name='username')['_class'] = "form-control"
+	form.element(_name='password')['_class'] = "form-control"
+	form.element(_name='funcao')['_class'] = "form-control"
+	form.element(_name='id_empresa')['_class'] = "form-control"
+	form.element(_name='supervisor')['_class'] = "form-control"
+
+	if form.process().accepted:
+		redirect(URL("users"))
+	return response.render("initial/form_users.html", form=form)
+
 
 def group():
 	print 'users'
@@ -488,6 +533,9 @@ def delete():
 		tabela 	= 	db.banco.id
 	if funcao 	==	"orgao":
 		tabela 	= 	db.orgao.id
+	if funcao 	==	"auth_user":
+		tabela 	= 	db.auth_user.id
+		funcao 	= 	"users"
 
 	db(tabela == id_tab).delete()	
 	redirect(URL(funcao))

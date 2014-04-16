@@ -75,6 +75,7 @@ auth.settings.extra_fields['auth_user'] = [
 	Field("id_empresa", db.empresa),
 	Field("supervisor"),
 	Field("lembrete", 'text'),
+	Field("meta")
 #	Field("photo", "upload"),
 #	Field("gender", requires=IS_IN_SET(["masculino","feminino"]))
 ]

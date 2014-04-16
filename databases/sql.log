@@ -160,3 +160,33 @@ ALTER TABLE emprestimo DROP COLUMN telefone;
 ALTER TABLE emprestimo ADD telefone VARCHAR(30);
 UPDATE emprestimo SET telefone=telefone__tmp;
 ALTER TABLE emprestimo DROP COLUMN telefone__tmp;
+timestamp: 2014-04-16T11:53:29.512219
+ALTER TABLE auth_user ADD meta VARCHAR(512);
+timestamp: 2014-04-16T16:16:36.327459
+ALTER TABLE emprestimo ADD envio TEXT;
+timestamp: 2014-04-16T16:50:35.245168
+CREATE TABLE agendamento(
+    id SERIAL PRIMARY KEY,
+    data_emp VARCHAR(512),
+    cpf VARCHAR(512),
+    nome VARCHAR(512),
+    data_agen DATE,
+    telefone TEXT,
+    obs TEXT,
+    vendedora VARCHAR(512)
+);
+success!
+timestamp: 2014-04-16T17:05:16.817966
+ALTER TABLE agendamento ADD telefone__tmp VARCHAR(512);
+UPDATE agendamento SET telefone__tmp=telefone;
+ALTER TABLE agendamento DROP COLUMN telefone;
+ALTER TABLE agendamento ADD telefone VARCHAR(512);
+UPDATE agendamento SET telefone=telefone__tmp;
+ALTER TABLE agendamento DROP COLUMN telefone__tmp;
+timestamp: 2014-04-16T17:28:05.358766
+ALTER TABLE situacao ADD data_sit__tmp TIMESTAMP;
+UPDATE situacao SET data_sit__tmp=data_sit;
+ALTER TABLE situacao DROP COLUMN data_sit;
+ALTER TABLE situacao ADD data_sit TIMESTAMP;
+UPDATE situacao SET data_sit=data_sit__tmp;
+ALTER TABLE situacao DROP COLUMN data_sit__tmp;

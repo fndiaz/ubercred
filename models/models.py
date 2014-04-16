@@ -26,14 +26,25 @@ db.define_table("emprestimo",
 	Field("banco", requires=IS_IN_SET(["", "itau", "bmg"])),
 	Field("contrato", requires=IS_IN_SET(["", "cheque", "fisico", "gravacao"])),
 	Field("adesao"),
+	Field("envio", "list:string"),
 	format="%(nome)s")
 
 db.define_table("situacao",
-	Field("data_sit", "date"),
+	Field("data_sit", "datetime"),
 	Field("obs", "text"),
 	Field("id_emprestimo", db.emprestimo),
 	Field("id_status", db.status)
 	)
+
+db.define_table("agendamento",
+	Field("data_emp"),
+	Field("cpf"),
+	Field("nome"),
+	Field("data_agen", "date"),
+	Field("telefone"),
+	Field("obs", "text"),
+	Field("vendedora"),
+	format="%(nome)s")
 
 db.define_table("funcao",
 	Field("nome"),
