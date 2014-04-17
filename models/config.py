@@ -1,4 +1,5 @@
 from gluon.storage import Storage
+from datetime import datetime
 
 config = Storage(
         db=Storage(),
@@ -94,12 +95,15 @@ if request.is_local:
 #response
 response.title= "titulo response"
 response.meta.keywords= "chave, outra, e outra"
+response.alert_bagde=""
 
 if not 'raiz' in session:
     session.raiz = '/home/fernado/web2py/tronco'
 
-#if not 'ano' in session:
-#    session.ano = '0'
+if not 'data_hoje' in session:
+	date = datetime.now()
+	date = date.strftime("%Y-%m-%d")
+	session.data_hoje = date
 
 #if not 'mes' in session:
 #    session.mes = '0'

@@ -1,8 +1,7 @@
 {{extend 'layout.html'}}
 
 {{block center}}
-<a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="{{=lem}}" data-original-title="Nota" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Agendamento</a>
-
+<a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="" data-original-title="Clique para agendar" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Agendar</a>
 
 
 <div class='row'>
@@ -37,7 +36,6 @@
 <div >
 <label>telefone:</label> 
 <div>{{=form.custom.widget.telefone}}</div>
-<br>
 </div>
 
 
@@ -52,7 +50,6 @@
 <div><select class="generic-widget" id="emprestimo_cidade" name="cidade">
 <option value=""></option>
 </option></select></div>
-<br>
 </div>
 
 
@@ -127,10 +124,11 @@
 <br>
 </div>
 
-<button type="submit" value="testaa" class="btn btn-primary">Enviar</button>
+
 </div><!--well-->
 </div><!--span-->
 
+<button style="margin-left: 1020px; margin-top: 0px; margin-bottom: 5px;"type="submit" value="testaa" class="btn btn-primary">Enviar</button>
 {{=form.custom.end}}
  
 
@@ -180,22 +178,22 @@
 
 </div><!--row-->
 
-</div><!--margin-->
+<!--</div>--><!--margin-->
 
 
 <script>
   $("#button").click(function(){
     var nome  = document.getElementById('emprestimo_nome').value;
-    alert(nome);
+    //alert(nome);
     $( agendamento_nome ).val( nome );
     var data  = document.getElementById('emprestimo_data_emp').value;
-    alert(data);
+    //alert(data);
     $( agendamento_data_emp ).val( data );
     var cpf  = document.getElementById('emprestimo_cpf').value;
-    alert(cpf);
+    //alert(cpf);
     $( agendamento_cpf ).val( cpf );
     var tel  = document.getElementById('emprestimo_telefone').value;
-    alert(tel);
+    //alert(tel);
     $( agendamento_telefone ).val( tel );
 
 });
@@ -224,8 +222,20 @@
    });
 
 $(function ()  
-  { $("#button").popover({ placement: "bottom", trigger: "hover" });  
+  { $("#button_no").popover({ placement: "bottom", trigger: "hover" });  
 });  
 
 </script>
+{{end}}
+
+
+
+{{block alert}}
+{{if response.alert_badge > 0:}}
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+  <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Você tem {{=response.alert_badge}} agendamentos para a data de hoje" data-original-title="Importante">
+    <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
+  </span>
+</a>
+{{pass}}
 {{end}}

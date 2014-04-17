@@ -5,10 +5,11 @@
 {{block center}}
 <div style="margin-left:-30px; margin-right:-30px">
 
-
+{{if session.auth.user.funcao != 'agente':}}
 <div class="a" style="float:left; position:relative">
 <button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}" >Adicionar</button>&nbsp;&nbsp;
 </div>
+{{pass}}
 
 <div class="a" style="float:left; position:relative; margin-left:0px">
 <form action="busca_emp_total" method="POST">
@@ -48,6 +49,7 @@
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_total}}</td>
 
             <td style="border:1px solid #ADC2CC">
+                {{if session.auth.user.funcao != 'agente':}}
                 <!--<a href="{{=URL(a='ubercred', c='initial', f='situacao')}}?id_emp={{=dado.emprestimo.id}}">
                     <i class=" icon-hand-up"></i></a> &nbsp;&nbsp;-->
                 <a href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}?id_edit={{=dado.emprestimo.id}}">
@@ -57,6 +59,7 @@
                 
                 <a class="link" data-tabela="emprestimo" data-nome="{{=dado.emprestimo.nome}}" data-value="{{=dado.emprestimo.id}}" href="#">
                     <i class=" icon-trash"></i></a>
+                {{pass}}
             </td>
         </tr>
     {{pass}}
@@ -90,6 +93,28 @@
 
 </div>
 
+{{if session.auth.user.funcao == "agente":}}
+<div style="margin-left: 950px;">
+<!--<h5>Soma dos contratos: {{=soma}}</h5>-->
+<table style="width:250px" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Meta</th>
+            <th>Total</th>
+        </tr>
+    </thread>
+    <tbody>
+  <tr>
+    <td><span class="label label-success">
+        {{=session.auth.user.meta}}</span></td>
+    <td><span class="label label-important">
+        {{=soma}}</span></td>
+  </tr>
+</tbody>
+</table>
+</div>
+{{pass}}
+
 <script>
 var links = document.querySelectorAll('.link');
 for (x in links) {
@@ -117,4 +142,17 @@ success: function(nome){
 });
 
 </script>
+{{end}}
+
+
+{{block alert}}
+{{if session.auth.user.funcao == "agente":}}
+{{if response.alert_badge > 0:}}
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+  <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Você tem {{=response.alert_badge}} agendamentos para a data de hoje" data-original-title="Importante">
+    <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
+  </span>
+</a>
+{{pass}}
+{{pass}}
 {{end}}

@@ -54,8 +54,8 @@ else:
         ]
     if session.auth.user.funcao == "agente":
         response.menu = [
-            (T('Formulário'), False, URL("initial", "form_emprestimo"), []),
-            (T('Empréstimos'), False, URL("initial", "emprestimo_agt"), [])
+            (T('Movimentação'), False, URL("initial", "form_emprestimo"), []),
+            (T('Contratos'), False, URL("initial", "emprestimo_agt"), [])
         ]
 
 

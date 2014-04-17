@@ -200,6 +200,20 @@ def orgao():
 	return response.render("initial/list_orgao.html", 
 		orgao=orgao)
 
+##---------------------------Agendamentos
+#@auth.requires_membership('admin')
+def agendamento():
+	#print session
+	response.title = 'agendamento'
+	response.alert_badge=get_count_agen()
+	query = (db.agendamento.vendedora == session.auth.user.username)&\
+		db.agendamento.data_agen.like('%'+session.data_hoje+'%')
+	print query
+	agen =	db(query).select()
+	print agen
+
+	return response.render("initial/list_agendamento.html", 
+		agen=agen)
 
 ##---------------------------Emprestimo
 @auth.requires_login()
@@ -231,7 +245,7 @@ def form_emprestimo_agt():
 	date = datetime.now()
 	date = date.strftime("%Y-%m-%d %I:%M:%S")
 	ls_user = get_user()
-	print session.auth.user.id
+	response.alert_badge=get_count_agen()
 	query = (db.auth_user.id == session.auth.user.id)
 	lem = db(query).select(db.auth_user.lembrete)
 	lem = lem[0].lembrete
@@ -259,8 +273,9 @@ def form_emprestimo_agt():
 		print request.vars
 		response.flash=("Ops, algo está errado")
 	
+		
 	return response.render("initial/form_emprestimo_agt.html", 
-		form_agen=form_agen, date=date, lem=lem, form=form, ls_user=ls_user)
+	 form_agen=form_agen, date=date, lem=lem, form=form, ls_user=ls_user)
 
 @auth.requires_membership('supervisor', 'admin')
 def form_emprestimo_spv():
@@ -288,6 +303,15 @@ def form_emprestimo_spv():
 	
 	return response.render("initial/form_emprestimo_spv.html", 
 		cidade=cidade, id_edit=id_edit, form=form, ls_user=ls_user)
+
+def get_count_agen():
+	# get total agendamentos
+	query = (db.agendamento.vendedora == session.auth.user.username)&\
+	 db.agendamento.data_agen.like('%'+session.data_hoje+'%')	
+	reg=db(query).count()
+	print query
+	print reg
+	return reg
 
 def get_user():
 	# get user empresa
@@ -360,9 +384,12 @@ def emprestimo2():
 
 def emprestimo_agt():
 	response.title = "Emprestimos"
+	response.alert_badge=get_count_agen()
 	user = session.auth.user.username
 	query = (db.emprestimo.id_empresa == db.empresa.id) &\
 	(db.emprestimo.vendedora == user)
+	soma = db(query).select(db.emprestimo.valor_total.sum())
+	soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -372,7 +399,7 @@ def emprestimo_agt():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	print regis
+	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
@@ -380,7 +407,7 @@ def emprestimo_agt():
 
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
 	return response.render("initial/list_emprestimo2.html", con=con,
-		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
+		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma)
 
 
 def detalhes_emprestimo():
@@ -416,7 +443,7 @@ def busca_emp_total():
 
 
 ##---------------------------Situação
-@auth.requires_membership('supervisor')
+#@auth.requires_membership('supervisor')
 def form_situacao():
 	response.title = 'situação'
 	id_emp = request.vars.id_emp
@@ -439,7 +466,7 @@ def form_situacao():
 	return response.render("initial/form_situacao.html", form=form, 
 												emp=emp, id_emp=id_emp)	
 
-@auth.requires_membership('supervisor')
+#@auth.requires_membership('supervisor')
 def situacao():
 	print request.vars.id_emp
 	id_emp = request.vars.id_emp

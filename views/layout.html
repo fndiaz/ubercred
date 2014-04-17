@@ -97,6 +97,12 @@
                     Sistema
                     <small>{{=response.title or ''}}</small>
                 </h2>
+
+              <div style="margin-left: 1050px; margin-top: -15px">  
+                {{block alert}}
+                {{end}}
+              </div>
+
             </div>
         </div>
     </header>
@@ -152,7 +158,12 @@
       <script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>
       <script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
       <![endif]-->
-  
+  <script>
+  $(function ()  
+  { $("#alerta_badge").popover({ placement: "bottom", trigger: "hover" });  
+});
+  </script>
+
   {{if response.google_analytics_id:}}
   <script src="{{=URL('static','js/analytics.js')}}"></script>
   <script type="text/javascript">
