@@ -5,9 +5,11 @@
 <div style="margin-left:-30px; margin-right:-30px">
 
 
+{{if session.auth.user.funcao == 'admin':}}
 <div class="a" style="float:left; position:relative">
 <button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}" >Adicionar</button>&nbsp;&nbsp;
 </div>
+{{pass}}
 
 <div class="a" style="float:left; position:relative; margin-left:0px">
 <form action="busca_emp_pend" method="POST">

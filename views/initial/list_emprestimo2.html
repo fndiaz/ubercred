@@ -5,7 +5,7 @@
 {{block center}}
 <div style="margin-left:-30px; margin-right:-30px">
 
-{{if session.auth.user.funcao != 'agente':}}
+{{if session.auth.user.funcao == 'admin':}}
 <div class="a" style="float:left; position:relative">
 <button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}" >Adicionar</button>&nbsp;&nbsp;
 </div>
@@ -13,7 +13,11 @@
 
 <div class="a" style="float:left; position:relative; margin-left:0px">
 <form action="busca_emp_total" method="POST">
-<input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto;" data-provide="typeahead" data-items="4" data-source="">
+<input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="">
+{{if session.auth.user.funcao != 'agente':}}
+<select class="generic-widget" id="busca_mes" style="width:100px; height:28px" name="mes"><option value=""></option>
+<option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select>
+{{pass}}
 <!--<input class="btn btn-primary" type="submit" name="Pesquisa" value="Pesquisar">-->
 <button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
 </form>
@@ -39,7 +43,9 @@
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.data_emp}}</td>
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.nome}}</td>
             <td style="border:1px solid #ADC2CC">
+                {{if session.auth.user.funcao != 'agente':}}
                 <a href="{{=URL(a='ubercred', c='initial', f='situacao')}}?id_emp={{=dado.emprestimo.id}}">
+                {{pass}}
                 {{=dado.emprestimo.cpf}}</a>    
             </td>
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.telefone}}</td>
@@ -148,7 +154,7 @@ success: function(nome){
 {{block alert}}
 {{if session.auth.user.funcao == "agente":}}
 {{if response.alert_badge > 0:}}
-<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento_agt')}}">
   <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Você tem {{=response.alert_badge}} agendamentos para a data de hoje" data-original-title="Importante">
     <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
   </span>

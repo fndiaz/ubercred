@@ -4,8 +4,20 @@
 {{block center}}
 
 {{if session.auth.user.funcao != 'agente':}}
-<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}" >Adicionar</button>
+<!--<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}" >Adicionar</button>-->
 {{pass}}
+
+<div class="a" style="float:left; position:relative; margin-left:0px">
+<form action="busca_agendamento" method="POST">
+<input id="busca_agendamento" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="">
+{{if session.auth.user.funcao != 'agente':}}
+<select class="generic-widget" id="busca_mes" style="width:100px; height:28px" name="mes"><option value=""></option>
+<option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select>
+{{pass}}
+<!--<input class="btn btn-primary" type="submit" name="Pesquisa" value="Pesquisar">-->
+<button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
+</form>
+</div>
 
 <table class="table table-striped">
     <thead>
@@ -14,6 +26,7 @@
             <th>Nome</th>
             <th>Cpf</th>
             <th>telefone</th>
+            {{if session.auth.user.funcao != 'agente':}}<th>Agente</th>{{pass}}
             <th>Obs</th>
             <th>#</th>
         </tr>
@@ -21,20 +34,29 @@
     <tbody>
     {{for dado in agen:}}
         <tr>
+            {{if session.auth.user.funcao == 'agente':}}
             <td width="", style="border:1px solid #ADC2CC">{{=dado.data_emp}}</td>
             <td width="", style="border:1px solid #ADC2CC">{{=dado.nome}}</td>
             <td width="", style="border:1px solid #ADC2CC">{{=dado.cpf}}</td>
             <td width="", style="border:1px solid #ADC2CC">{{=dado.telefone}}</td>
             <td width="", style="border:1px solid #ADC2CC">{{=dado.obs}}</td>
+            {{else:}}
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.data_emp}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.nome}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.cpf}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.telefone}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.vendedora}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.obs}}</td>
             <td style="border:1px solid #ADC2CC">
-                {{if session.auth.user.funcao != 'agente':}}
-                <a href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}?id_edit={{=dado.id}}">
+                <a href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}?id_edit={{=dado.agendamento.id}}">
                     <i class=" icon-edit"></i></a> &nbsp;&nbsp;
 
-                <a class="link" data-tabela="funcao" data-nome="{{=dado.nome}}" data-value="{{=dado.id}}" href="#">
+                <a class="link" data-tabela="funcao" data-nome="{{=dado.agendamento.nome}}" data-value="{{=dado.agendamento.id}}" href="#">
                     <i class=" icon-trash"></i></a>
-                {{pass}}
             </td>
+            {{pass}}
+            {{pass}}
+
         </tr>
     {{pass}}
     </tbody>
@@ -56,6 +78,16 @@ for (x in links) {
     return false;
     }
 }
+
+$.ajax({
+method: "get",
+url: "initial/cpf_agendamento_json",
+dataType: "json",
+success: function(nome){
+  $('#busca_agendamento').typeahead({source: nome});
+}
+});
+
 </script>
 
 {{end}}

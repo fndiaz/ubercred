@@ -147,21 +147,33 @@
     {{=form_agen.custom.widget.data_emp}}
     </div>
 
+    <div>
     <label>Nome</label>  
     {{=form_agen.custom.widget.nome}}
+    </div><br>
 
+    <div>
+    <label>Data Agendamento</label>
+    <input id="agendamento_data_agen" name="data_agen" min="2012-01-01" max="2016-01-01" type="date"> 
+    <!--<input class="" id="agendamento_data_agen" name="data_agen" type="text" value="aaa-mm-dd">-->
+    </div><br>
+
+
+    <div>
     <label>Cpf</label>  
     {{=form_agen.custom.widget.cpf}}
+    </div><br>
     
-    <label>Data2</label>  
-    <input class="" id="agendamento_data_agen" name="data_agen" type="text" value="aaa-mm-dd">
-
+    <div>
     <label>Telefone</label>  
     {{=form_agen.custom.widget.telefone}}
+    </div><br>
 
+    <div>
     <label>Obs</label>
     <textarea class="text" cols="100" id="agendamento_obs" name="obs" rows="2"></textarea> 
-    
+    </div>
+
     <div style="display: none;">
     <label>vendedora:</label> 
     <input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
@@ -232,7 +244,7 @@ $(function ()
 
 {{block alert}}
 {{if response.alert_badge > 0:}}
-<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento_agt')}}">
   <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Você tem {{=response.alert_badge}} agendamentos para a data de hoje" data-original-title="Importante">
     <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
   </span>
