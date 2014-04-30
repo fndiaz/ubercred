@@ -111,14 +111,9 @@
     <tbody>
   <tr>
     <td><span class="label label-success">
-        {{=float(session.auth.user.meta)}}</span></td>
-    {{if float(session.auth.user.meta) > soma:}}
+        {{=session.auth.user.meta}}</span></td>
     <td><span class="label label-important">
         {{=soma}}</span></td>
-    {{else:}}
-    <td><span class="label label-success">
-    {{=soma}}</span></td>
-    {{pass}}
   </tr>
 </tbody>
 </table>

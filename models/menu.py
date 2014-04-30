@@ -31,9 +31,10 @@ else:
         response.menu = [
         #(T('Empréstimos'), False, URL("initial", "emprestimo2"), []),
         (T('Movimentações'), False, URL(""), [
-            (T('Todos'), False, URL("initial", "emprestimo2")),
-            (T('Pendentes'), False, URL("initial", "emprestimo"))
+            (T('Todos'), False, URL("initial", "emprestimo_admin_total")),
+            (T('Pendentes'), False, URL("initial", "emprestimo_admin_pen"))
         ]),
+        (T('Agendamentos'), False, URL("initial", "agendamento_admin"), []),
         (T('Cadastros'), False, URL(""), [
             (T('Empresas'), False, URL("initial", "empresa")),
             (T('Status'), False, URL("initial", "status")),
@@ -49,7 +50,7 @@ else:
             (T('Todos'), False, URL("initial", "emprestimo2")),
             (T('Pendentes'), False, URL("initial", "emprestimo"))
         ]),
-        (T('Agendamento'), False, URL("initial", "agendamento_spv"), [])
+        (T('Agendamentos'), False, URL("initial", "agendamento_spv"), [])
         ]
     if session.auth.user.funcao == "agente":
         response.menu = [

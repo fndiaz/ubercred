@@ -28,17 +28,37 @@
 <div>{{=form.custom.widget.password}}</div>
 <br>
 
+{{if request.vars.id_edit != None:}}
+<div style="display: none;">
+{{pass}}
 <label>Função:</label>
 <div>{{=form.custom.widget.funcao}}</div>
 <br>
+{{if request.vars.id_edit != None:}}
+</div>
+{{pass}}
 
+{{if request.vars.id_edit != None:}}
+<div style="display: none;">
+{{pass}}
 <label>Empresa:</label>
 <div>{{=form.custom.widget.id_empresa}}</div>
 <br>
+{{if request.vars.id_edit != None:}}
+</div>
+{{pass}}
 
+
+{{if request.vars.id_edit != None:}}
+<div style="display: none;">
+{{pass}}
 <label>Supervisor:</label>
 <div>{{=form.custom.widget.supervisor}}</div>
 <br>
+{{if request.vars.id_edit != None:}}
+</div>
+{{pass}}
+
 
 <label>$-Meta:</label>
 <div>{{=form.custom.widget.meta}}</div>

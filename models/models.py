@@ -9,24 +9,35 @@ db.define_table("estados",
 	Field("nome"),
 	format="%(sigla)s")
 
+db.define_table("orgao",
+	Field("nome"),
+	format="%(nome)s")
+
+db.define_table("banco",
+	Field("nome"),
+	format="%(nome)s")
+
+db.define_table("envio",
+	Field("nome"),
+	format="%(nome)s")
+
 db.define_table("emprestimo",
 	Field("data_emp", "datetime"),
 	Field("nome", "string", length=60),
 	Field("cpf", "string", length=60),
-	Field("telefone", "string", length=30),
+	Field("telefone", "list:string"),
 	Field("estado", db.estados),
 	Field("cidade"),
 	Field("valor_parcela", "double"),
 	Field("valor_total", "double"),
-	Field("orgao", requires=IS_IN_SET(["INSS", "Estadual", "Federal"])),
+	Field("orgao", db.orgao),
 	Field("operacao", "string"),
 	Field("vendedora", "string"),
 	Field("n_parcelas", "integer"),
 	Field("id_empresa", db.empresa),
-	Field("banco", requires=IS_IN_SET(["", "itau", "bmg"])),
-	Field("contrato", requires=IS_IN_SET(["", "cheque", "fisico", "gravacao"])),
-	Field("adesao"),
-	Field("envio", "list:string"),
+	Field("banco", db.banco),
+	Field("envio", db.envio),
+	Field("adesao", "list:string"),
 	format="%(nome)s")
 
 db.define_table("situacao",
@@ -50,26 +61,18 @@ db.define_table("funcao",
 	Field("nome"),
 	)
 
-db.define_table("banco",
-	Field("nome"),
-	)
-
-db.define_table("orgao",
-	Field("nome"),
-	)
-
-if not db(db.estados).count():
-	print '>>>>>>'
-	import  json
-	from pprint import pprint
-	print json.dumps("%s/applications/ubercred/views/estados.json" %(session.raiz))
-	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
-		json_data = json.load(json_data)
-		print 'ow'
-		#print json_data['Nome']
-		for row in json_data:
-			print "%s -- %s"  %(row['Nome'], row['ID'])
-			db.estados.insert(nome=row['Nome'], sigla=row['Sigla'])
+#if not db(db.estados).count():
+#	print '>>>>>>'
+#	import  json
+#	from pprint import pprint
+#	print json.dumps("%s/applications/ubercred/views/estados.json" %(session.raiz))
+#	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
+#		json_data = json.load(json_data)
+#		print 'ow'
+#		#print json_data['Nome']
+#		for row in json_data:
+#			print "%s -- %s"  %(row['Nome'], row['ID'])
+#			db.estados.insert(nome=row['Nome'], sigla=row['Sigla'])
 
 if not db(db.empresa).count():
 	db.empresa.insert(nome="forip")

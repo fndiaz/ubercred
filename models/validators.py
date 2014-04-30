@@ -23,12 +23,12 @@ db.emprestimo.n_parcelas.requires = IS_NOT_EMPTY(error_message=
 db.emprestimo.valor_total.requires = IS_NOT_EMPTY(error_message=
 	T("valor não pode ser nulo"))
 
-orgao=[]
-var=db(db.orgao).select(db.orgao.nome)
-for row in var:
-	orgao.append(row.nome)
-db.emprestimo.orgao.requires = IS_IN_SET(orgao, 
-	error_message=T("valor não pode ser nulo"))
+#orgao=[]
+#var=db(db.orgao).select(db.orgao.nome)
+#for row in var:
+#	orgao.append(row.nome)
+#db.emprestimo.orgao.requires = IS_IN_SET(orgao, 
+#	error_message=T("valor não pode ser nulo"))
 db.emprestimo.cpf.requires = IS_CPF_OR_CNPJ()
 db.emprestimo.estado.requires = IS_EMPTY_OR(IS_IN_DB(db, 'estados.id', 
 	'%(sigla)s', error_message=T("valor inválido")))
@@ -36,18 +36,18 @@ db.emprestimo.id_empresa.requires = IS_EMPTY_OR(IS_IN_DB(db, 'empresa.id',
 	'%(nome)s', error_message=T("valor inválido")))
 
 banco=[]
-var=db(db.banco).select(db.banco.nome)
-for row in var:
-	banco.append(row.nome)
-db.emprestimo.banco.requires = IS_EMPTY_OR(IS_IN_SET(banco, 
+#var=db(db.banco).select(db.banco.nome)
+#for row in var:
+#	banco.append(row.nome)
+db.emprestimo.banco.requires = IS_EMPTY_OR(IS_IN_DB(db, db.banco.id, '%(nome)s', 
 	error_message=T("valor inválido")))
 
-funcao=[]
-var=db(db.funcao).select(db.funcao.nome)
-for row in var:
-	funcao.append(row.nome)
-db.emprestimo.contrato.requires = IS_EMPTY_OR(IS_IN_SET(funcao, 
-	error_message=T("valor inválido")))
+#funcao=[]
+#var=db(db.funcao).select(db.funcao.nome)
+#for row in var:
+#	funcao.append(row.nome)
+#db.emprestimo.contrato.requires = IS_EMPTY_OR(IS_IN_SET(funcao, 
+#	error_message=T("valor inválido")))
 
 
 ##Auth_user

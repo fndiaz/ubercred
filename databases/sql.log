@@ -190,3 +190,31 @@ ALTER TABLE situacao DROP COLUMN data_sit;
 ALTER TABLE situacao ADD data_sit TIMESTAMP;
 UPDATE situacao SET data_sit=data_sit__tmp;
 ALTER TABLE situacao DROP COLUMN data_sit__tmp;
+timestamp: 2014-04-30T14:00:34.778584
+ALTER TABLE emprestimo ADD telefone__tmp TEXT;
+UPDATE emprestimo SET telefone__tmp=telefone;
+ALTER TABLE emprestimo DROP COLUMN telefone;
+ALTER TABLE emprestimo ADD telefone TEXT;
+UPDATE emprestimo SET telefone=telefone__tmp;
+ALTER TABLE emprestimo DROP COLUMN telefone__tmp;
+timestamp: 2014-04-30T14:33:29.096565
+ALTER TABLE emprestimo ADD adesao__tmp INTEGER;
+UPDATE emprestimo SET adesao__tmp=adesao;
+timestamp: 2014-04-30T14:36:14.837925
+ALTER TABLE emprestimo ADD adesao__tmp INTEGER;
+UPDATE emprestimo SET adesao__tmp=adesao;
+timestamp: 2014-04-30T15:04:46.408177
+CREATE TABLE envio(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-04-30T15:04:46.846779
+ALTER TABLE emprestimo DROP COLUMN contrato;
+timestamp: 2014-04-30T15:13:06.620530
+ALTER TABLE emprestimo ADD adesao__tmp TEXT;
+UPDATE emprestimo SET adesao__tmp=adesao;
+ALTER TABLE emprestimo DROP COLUMN adesao;
+ALTER TABLE emprestimo ADD adesao TEXT;
+UPDATE emprestimo SET adesao=adesao__tmp;
+ALTER TABLE emprestimo DROP COLUMN adesao__tmp;
