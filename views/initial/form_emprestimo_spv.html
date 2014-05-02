@@ -5,9 +5,15 @@
 <div class="span5">
 <div class="well">
 {{=form.custom.begin}}
+<label>orgão:</label> 
+<div>{{=form.custom.widget.orgao}}</div>
+<br>
+
+<div style="display: none;">
 <label>data:</label>
 <div>{{=form.custom.widget.data_emp}}</div>
 <br>
+</div>
 
 <label>nome:</label> 
 <div>{{=form.custom.widget.nome}}</div>
@@ -18,7 +24,7 @@
 <br>
 
 <label>telefone:</label> 
-<div>{{=form.custom.widget.telefone}}</div>
+<div style="margin-left: -26px;">{{=form.custom.widget.telefone}}</div>
 <br>
 
 <label>estado:</label> 
@@ -44,14 +50,6 @@
 {{pass}}
 {{pass}}
 
-<label>valor da parcela:</label>
-<div>{{=form.custom.widget.valor_parcela}}</div>
-<br>
-
-<label>valor total:</label> 
-<div>{{=form.custom.widget.valor_total}}</div>
-<br>
-
 </div>
 </div><!--span5-->
 
@@ -60,21 +58,27 @@
 <div class="span5">
 <div class="well">
 
-<label>orgão:</label> 
-<div>{{=form.custom.widget.orgao}}</div>
-<br>
-
 {{if id_edit is None:}}
 <label>vendedora:</label> 
 <div><input class="string invalidinput" id="emprestimo_vendedora" name="vendedora" type="text" value="{{=ls_user[0]}}" readonly>
 </div>
 <br>
 {{else:}}
+<div style="display: none;">
 <label>Vendedora:</label> 
 <div>{{=form.custom.widget.vendedora}}</div>
 <br>
+</div>
 {{pass}}
 {{pass}}
+
+<label>valor da parcela:</label>
+<div>{{=form.custom.widget.valor_parcela}}</div>
+<br>
+
+<label>valor total:</label> 
+<div>{{=form.custom.widget.valor_total}}</div>
+<br>
  
 <label>número de parcelas:</label> 
 <div>{{=form.custom.widget.n_parcelas}}</div>
@@ -88,9 +92,11 @@
 </div>
 <br>
 {{else:}}
+<div style="display: none;">
 <label>empresa:</label> 
 <div>{{=form.custom.widget.id_empresa}}</div>
 <br>
+</div>
 {{pass}}
 {{pass}}
  

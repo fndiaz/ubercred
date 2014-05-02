@@ -3,23 +3,23 @@
 
 {{block center}}
 
-<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_status')}}" >Adicionar</button>
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_envio')}}" >Adicionar</button>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Status</th>
+            <th>Envio</th>
             <th>#</th>
         </tr>
     </thead>
     <tbody>
-    {{for dado in status:}}
+    {{for dado in envio:}}
         <tr>
-            <td width="65%", style="border:1px solid #ADC2CC">{{=dado.status}}</td>
+            <td width="65%", style="border:1px solid #ADC2CC">{{=dado.nome}}</td>
             <td style="border:1px solid #ADC2CC">
-                <a href="{{=URL(a='ubercred', c='initial', f='form_status')}}?id_edit={{=dado.id}}">
+                <a href="{{=URL(a='ubercred', c='initial', f='form_envio')}}?id_edit={{=dado.id}}">
                     <i class=" icon-edit"></i></a> &nbsp;&nbsp;
-                
-                <a class="link" data-tabela="status" data-nome="{{=dado.status}}" data-value="{{=dado.id}}" href="#">
+
+                <a class="link" data-tabela="envio" data-nome="{{=dado.nome}}" data-value="{{=dado.id}}" href="#">
                     <i class=" icon-trash"></i></a>
             </td>
         </tr>
@@ -44,4 +44,5 @@ for (x in links) {
     }
 }
 </script>
+
 {{end}}

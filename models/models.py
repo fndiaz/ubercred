@@ -36,8 +36,8 @@ db.define_table("emprestimo",
 	Field("n_parcelas", "integer"),
 	Field("id_empresa", db.empresa),
 	Field("banco", db.banco),
+	Field("adesao", "string"),
 	Field("envio", db.envio),
-	Field("adesao", "list:string"),
 	format="%(nome)s")
 
 db.define_table("situacao",
@@ -57,22 +57,21 @@ db.define_table("agendamento",
 	Field("vendedora"),
 	format="%(nome)s")
 
-db.define_table("funcao",
-	Field("nome"),
-	)
+#db.define_table("funcao",
+#	Field("nome"),
+#	)
 
-#if not db(db.estados).count():
-#	print '>>>>>>'
-#	import  json
-#	from pprint import pprint
-#	print json.dumps("%s/applications/ubercred/views/estados.json" %(session.raiz))
-#	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
-#		json_data = json.load(json_data)
-#		print 'ow'
-#		#print json_data['Nome']
-#		for row in json_data:
-#			print "%s -- %s"  %(row['Nome'], row['ID'])
-#			db.estados.insert(nome=row['Nome'], sigla=row['Sigla'])
+if not db(db.estados).count():
+	print '>>>>>>'
+	import  json
+	from pprint import pprint
+	print json.dumps("%s/applications/ubercred/views/estados.json" %(session.raiz))
+	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
+		json_data = json.load(json_data)
+		#print json_data['Nome']
+		for row in json_data:
+			print "%s -- %s"  %(row['Nome'], row['ID'])
+			db.estados.insert(nome=row['Nome'], sigla=row['Sigla'])
 
 if not db(db.empresa).count():
 	db.empresa.insert(nome="forip")
@@ -84,7 +83,7 @@ if not db(db.auth_group).count():
 
 if not db(db.auth_user).count():
 		db.auth_user.insert(first_name="admin",last_name="admin",username="admin"\
-		,funcao="supervisor",id_empresa="1",email="admin@admin.com",\
+		,funcao="admin",id_empresa="1",email="admin@admin.com",\
 		password=db.auth_user.password.validate("admin123")[0])
 
 

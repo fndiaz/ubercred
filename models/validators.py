@@ -35,12 +35,16 @@ db.emprestimo.estado.requires = IS_EMPTY_OR(IS_IN_DB(db, 'estados.id',
 db.emprestimo.id_empresa.requires = IS_EMPTY_OR(IS_IN_DB(db, 'empresa.id', 
 	'%(nome)s', error_message=T("valor inválido")))
 
-banco=[]
+#banco=[]
 #var=db(db.banco).select(db.banco.nome)
 #for row in var:
 #	banco.append(row.nome)
 db.emprestimo.banco.requires = IS_EMPTY_OR(IS_IN_DB(db, db.banco.id, '%(nome)s', 
 	error_message=T("valor inválido")))
+db.emprestimo.orgao.requires = IS_IN_DB(db, db.orgao.id, '%(nome)s', 
+	error_message=T("valor inválido"))
+db.emprestimo.envio.requires = IS_IN_DB(db, db.envio.id, '%(nome)s', 
+	error_message=T("valor inválido"))
 
 #funcao=[]
 #var=db(db.funcao).select(db.funcao.nome)

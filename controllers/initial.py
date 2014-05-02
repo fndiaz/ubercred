@@ -10,7 +10,7 @@ def principal():
 	id_user = session.auth.user.id
 	if func == "supervisor":
 		auth.add_membership(1, id_user)
-		redirect(URL(emprestimo))
+		redirect(URL(emprestimo2))
 	if func == "agente":
 		auth.add_membership(2, id_user)
 		redirect(URL(form_emprestimo))
@@ -31,22 +31,27 @@ def cpf_json():
 			& (db.emprestimo.estado == None)\
 			& (db.emprestimo.vendedora == db.auth_user.username)\
 			& (db.auth_user.supervisor == session.auth.user.username)\
-			& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			& (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 	if request.vars.func == "total":
 			query = (db.emprestimo.id_empresa == db.empresa.id)\
 			& (db.emprestimo.vendedora == db.auth_user.username)\
 			& (db.auth_user.supervisor == session.auth.user.username)\
-			& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			& (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 	if session.auth.user.funcao == 'agente':
 		query = (db.emprestimo.id_empresa == db.empresa.id) &\
-				(db.emprestimo.vendedora == session.auth.user.username)&\
-				db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+				(db.emprestimo.vendedora == session.auth.user.username)\
+				& (db.emprestimo.data_emp.year()==ano)\
+				& (db.emprestimo.data_emp.month()==mes)
 	if session.auth.user.funcao == "admin":
 		if request.vars.func == "total":
-			query = db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			query = (db.emprestimo.data_emp.year()==ano)\
+					& (db.emprestimo.data_emp.month()==mes)
 		if request.vars.func == "pend":
-			query = (db.emprestimo.estado == None)&\
-					 db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			query = (db.emprestimo.estado == None)\
+					& (db.emprestimo.data_emp.year()==ano)\
+					& (db.emprestimo.data_emp.month()==mes)
 
 	cpf = db(query).select(db.emprestimo.cpf)
 	lista = []
@@ -60,9 +65,14 @@ def cpf_agendamento_json():
 	print ">>>"
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
-	query = (db.agendamento.vendedora == db.auth_user.username)&\
-		(db.auth_user.supervisor == session.auth.user.username)&\
-		db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+	if session.auth.user.funcao == 'supervisor':
+		query = (db.agendamento.vendedora == db.auth_user.username)&\
+				(db.auth_user.supervisor == session.auth.user.username)\
+				& (db.agendamento.data_agen.year()==ano)\
+				& (db.agendamento.data_agen.month()==mes)
+	if session.auth.user.funcao == 'admin':
+		query = (db.agendamento.data_agen.year()==ano)\
+				& (db.agendamento.data_agen.month()==mes)
 
 	cpf = db(query).select(db.agendamento.cpf)
 	lista = []
@@ -186,6 +196,31 @@ def funcao():
 	return response.render("initial/list_funcao.html", 
 		funcao=funcao)
 
+##---------------------------Envio
+@auth.requires_membership('admin')
+def form_envio():
+	response.title = 'Forma de Envio'
+	id_edit	= request.vars['id_edit']
+
+	if id_edit is None:
+		form 	= SQLFORM(db.envio)
+	else:
+		form 	= SQLFORM(db.envio, id_edit)
+
+	if form.process().accepted:
+		redirect(URL("envio"))
+
+	return response.render("initial/show_form.html", form=form)
+
+@auth.requires_membership('admin')
+def envio():
+	#print session
+	response.title = 'Forma de envio'
+	envio =	db(db.envio).select(orderby=db.envio.id)
+
+	return response.render("initial/list_envio.html", 
+		envio=envio)
+
 ##---------------------------Banco
 @auth.requires_membership('admin')
 def form_banco():
@@ -241,9 +276,14 @@ def orgao():
 def agendamento_agt():
 	#print session
 	response.title = 'agendamento'
+	ano = session.data_hoje.split('-')[0]
+	mes = session.data_hoje.split('-')[1]
+	dia = session.data_hoje.split('-')[2]
 	response.alert_badge=get_count_agen()
-	query = (db.agendamento.vendedora == session.auth.user.username)&\
-		db.agendamento.data_agen.like('%'+session.data_hoje+'%')
+	query = (db.agendamento.vendedora == session.auth.user.username)\
+			& (db.agendamento.data_agen.year()==ano)\
+			& (db.agendamento.data_agen.month()==mes)\
+			& (db.agendamento.data_agen.day()==dia)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -269,8 +309,9 @@ def agendamento_spv():
 	mes = session.data_hoje.split('-')[1]
 	response.title = 'agendamento'
 	query = (db.agendamento.vendedora == db.auth_user.username)&\
-		(db.auth_user.supervisor == session.auth.user.username)&\
-		db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+		(db.auth_user.supervisor == session.auth.user.username)\
+		& (db.agendamento.data_agen.year()==ano)\
+		& (db.agendamento.data_agen.month()==mes)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -295,8 +336,9 @@ def agendamento_admin():
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
 	response.title = 'agendamento'
-	query = (db.agendamento.vendedora == db.auth_user.username)&\
-			 db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+	query = (db.agendamento.vendedora == db.auth_user.username)\
+			& (db.agendamento.data_agen.year()==ano)\
+			& (db.agendamento.data_agen.month()==mes)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -341,10 +383,7 @@ def form_emprestimo():
 
 @auth.requires_login()
 def form_emprestimo_agt():
-	print '>>>>>>'
 	print session.auth.user.meta
-	if float(session.auth.user.meta) > 50000:
-		print 'passou'
 	response.title = 'Emprestimo agente'
 	id_edit = request.vars['id_edit']
 	date = datetime.now()
@@ -402,7 +441,7 @@ def form_emprestimo_spv():
 
 	if form.process().accepted:
 		session.flash=("Registro processado")
-		redirect(URL("emprestimo_admin_total")) 
+		redirect(URL("principal")) 
 	else:
 		print request.vars
 	
@@ -412,8 +451,13 @@ def form_emprestimo_spv():
 
 def get_count_agen():
 	# get total agendamentos
-	query = (db.agendamento.vendedora == session.auth.user.username)&\
-	 db.agendamento.data_agen.like('%'+session.data_hoje+'%')	
+	ano = session.data_hoje.split('-')[0]
+	mes = session.data_hoje.split('-')[1]
+	dia = session.data_hoje.split('-')[2]
+	query = (db.agendamento.vendedora == session.auth.user.username)\
+			& (db.agendamento.data_agen.year()==ano)\
+			& (db.agendamento.data_agen.month()==mes)\
+			& (db.agendamento.data_agen.day()==dia)
 	reg=db(query).count()
 	print query
 	print reg
@@ -443,7 +487,8 @@ def emprestimo():
 		& (db.emprestimo.estado == None)\
 		& (db.emprestimo.vendedora == db.auth_user.username)\
 		& (db.auth_user.supervisor == session.auth.user.username)\
-		&  db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+		& (db.emprestimo.data_emp.year()==ano)\
+		& (db.emprestimo.data_emp.month()==mes)
 	
 	#query =(db.emprestimo.vendedora == db.auth_user.username)
 	#print db(db.auth_user.id == session.auth.user.username).select(db.auth_user.funcao)
@@ -476,7 +521,8 @@ def emprestimo2():
 	query = (db.emprestimo.id_empresa == db.empresa.id)\
 		& (db.emprestimo.vendedora == db.auth_user.username)\
 		& (db.auth_user.supervisor == session.auth.user.username)\
-		& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+		& (db.emprestimo.data_emp.year()==ano)\
+		& (db.emprestimo.data_emp.month()==mes)
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -506,7 +552,8 @@ def emprestimo_agt():
 	mes = session.data_hoje.split('-')[1]
 	query = (db.emprestimo.id_empresa == db.empresa.id) &\
 	(db.emprestimo.vendedora == user) &\
-	db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+	(db.emprestimo.data_emp.year()==ano) &\
+	(db.emprestimo.data_emp.month()==mes)
 
 	soma = db(query).select(db.emprestimo.valor_total.sum())
 	soma = soma[0]._extra['SUM(emprestimo.valor_total)']
@@ -535,7 +582,8 @@ def emprestimo_admin_total():
 	user = session.auth.user.username
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
-	query = db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+	query = (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 	#soma = db(query).select(db.emprestimo.valor_total.sum())
 	#soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
@@ -562,8 +610,9 @@ def emprestimo_admin_pen():
 	user = session.auth.user.username
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
-	query = db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')\
-	& (db.emprestimo.estado == None)
+	query = (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)\
+			& (db.emprestimo.estado == None)
 	#soma = db(query).select(db.emprestimo.valor_total.sum())
 	#soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
@@ -589,7 +638,9 @@ def emprestimo_admin_pen():
 def detalhes_emprestimo():
 	response.title = "Detalhes"
 	id_det = request.vars.id_det
-	query=((db.emprestimo.id == id_det) & (db.emprestimo.id_empresa == db.empresa.id))
+	query=(db.emprestimo.id == id_det) & (db.emprestimo.id_empresa == db.empresa.id)\
+		  & (db.orgao.id == db.emprestimo.orgao)\
+		  & (db.envio.id == db.emprestimo.envio)	
 	con=db(query).select()
 	print con
 
@@ -597,11 +648,16 @@ def detalhes_emprestimo():
 
 def busca_emp_pend():
 	response.title = "Emprestimos pendentes"
-	query = (db.emprestimo.id_empresa == db.empresa.id) \
-		& (db.emprestimo.estado == None)\
-		& (db.emprestimo.vendedora == db.auth_user.username)\
-		& (db.auth_user.supervisor == session.auth.user.username)\
-		& (db.emprestimo.cpf == request.vars.cpf)\
+	if session.auth.user.funcao == 'supervisor':
+		query = (db.emprestimo.id_empresa == db.empresa.id) \
+			& (db.emprestimo.estado == None)\
+			& (db.emprestimo.vendedora == db.auth_user.username)\
+			& (db.auth_user.supervisor == session.auth.user.username)\
+			& (db.emprestimo.cpf == request.vars.cpf)
+	if session.auth.user.funcao == 'admin':
+		query = (db.emprestimo.id_empresa == db.empresa.id) \
+			& (db.emprestimo.estado == None)\
+			& (db.emprestimo.cpf == request.vars.cpf)
 
 	con = db(query).select(orderby=db.emprestimo.id)
 	
@@ -619,7 +675,8 @@ def busca_emp_total():
 			& (db.emprestimo.vendedora == db.auth_user.username)\
 			& (db.auth_user.supervisor == session.auth.user.username)\
 			& (db.emprestimo.cpf == request.vars.cpf)\
-			& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			& (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 		if request.vars.mes == "":
 			query = (db.emprestimo.id_empresa == db.empresa.id)\
 			& (db.emprestimo.vendedora == db.auth_user.username)\
@@ -629,8 +686,8 @@ def busca_emp_total():
 			query = (db.emprestimo.id_empresa == db.empresa.id)\
 			& (db.emprestimo.vendedora == db.auth_user.username)\
 			& (db.auth_user.supervisor == session.auth.user.username)\
-			& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
-			redirect(URL("emprestimo2", vars={'query':query})) 
+			& (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 	if session.auth.user.funcao == "agente":
 		query = (db.emprestimo.id_empresa == db.empresa.id) &\
 				(db.emprestimo.vendedora == session.auth.user.username)&\
@@ -639,11 +696,13 @@ def busca_emp_total():
 		soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	if session.auth.user.funcao == "admin":
 		query = (db.emprestimo.cpf == request.vars.cpf)\
-			& db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')
+			& (db.emprestimo.data_emp.year()==ano)\
+			& (db.emprestimo.data_emp.month()==mes)
 		if request.vars.mes == "":
 			query = (db.emprestimo.cpf == request.vars.cpf)
 		if request.vars.cpf == "":
-			query = db.emprestimo.data_emp.like('%'+ano+'-'+mes+'%')		
+			query = (db.emprestimo.data_emp.year()==ano)\
+					& (db.emprestimo.data_emp.month()==mes)		
 
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), 
 		orderby=db.emprestimo.id)
@@ -659,25 +718,29 @@ def busca_agendamento():
 		query = (db.agendamento.vendedora == db.auth_user.username)&\
 				(db.auth_user.supervisor == session.auth.user.username)\
 				& (db.agendamento.cpf == request.vars.cpf)\
-				& db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+				& (db.agendamento.data_agen.year()==ano)\
+				& (db.agendamento.data_agen.month()==mes)
 		if request.vars.mes == "":
 			query = (db.agendamento.vendedora == db.auth_user.username)&\
 					(db.auth_user.supervisor == session.auth.user.username)&\
 					(db.agendamento.cpf == request.vars.cpf)
 		if request.vars.cpf == "":
 			query = (db.agendamento.vendedora == db.auth_user.username)&\
-					(db.auth_user.supervisor == session.auth.user.username)&\
-					 db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+					(db.auth_user.supervisor == session.auth.user.username)\
+					& (db.agendamento.data_agen.year()==ano)\
+					& (db.agendamento.data_agen.month()==mes)
 	if session.auth.user.funcao == "admin":
 		query = (db.agendamento.vendedora == db.auth_user.username)&\
-				(db.agendamento.cpf == request.vars.cpf)&\
-				 db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+				(db.agendamento.cpf == request.vars.cpf)\
+				& (db.agendamento.data_agen.year()==ano)\
+				& (db.agendamento.data_agen.month()==mes)
 		if request.vars.mes == "":
 			query = (db.agendamento.vendedora == db.auth_user.username)&\
 					(db.agendamento.cpf == request.vars.cpf)
 		if request.vars.cpf == "":
-			query = (db.agendamento.vendedora == db.auth_user.username)&\
-					db.agendamento.data_agen.like('%'+ano+'-'+mes+'%')
+			query = (db.agendamento.vendedora == db.auth_user.username)\
+					& (db.agendamento.data_agen.year()==ano)\
+					& (db.agendamento.data_agen.month()==mes)
 
 	agen =	db(query).select()
 	return response.render("initial/list_agendamento.html", agen=agen,
@@ -795,11 +858,12 @@ def delete():
 	if funcao 	==	"status":
 		tabela 	= 	db.status.id
 	if funcao 	==	"emprestimo":
+		funcao 	= 	"principal"
 		tabela 	= 	db.emprestimo.id
 	if funcao 	==	"situacao":
 		tabela 	= 	db.situacao.id
-	if funcao 	==	"funcao":
-		tabela 	= 	db.funcao.id
+	if funcao 	==	"envio":
+		tabela 	= 	db.envio.id
 	if funcao 	==	"banco":
 		tabela 	= 	db.banco.id
 	if funcao 	==	"orgao":

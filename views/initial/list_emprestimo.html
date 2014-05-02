@@ -16,7 +16,7 @@
 <input id="busca_emp_pend" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto;" data-provide="typeahead" data-items="4" data-source="">
 <button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
 </form>
-</div>
+</div><br>
 
 
 
@@ -46,8 +46,8 @@
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_parcela}}</td>
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_total}}</td>
             <td style="border:1px solid #ADC2CC">
-                <a href="{{=URL(a='ubercred', c='initial', f='detalhes_emprestimo')}}?id_det={{=dado.emprestimo.id}}">
-                    <i class=" icon-zoom-in"></i></a> &nbsp;&nbsp;                
+                <!--<a href="{{=URL(a='ubercred', c='initial', f='detalhes_emprestimo')}}?id_det={{=dado.emprestimo.id}}">
+                    <i class=" icon-zoom-in"></i></a> &nbsp;&nbsp;-->                
 
                 <a href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}?id_edit={{=dado.emprestimo.id}}">
                     <i class=" icon-edit"></i></a> &nbsp;&nbsp;
