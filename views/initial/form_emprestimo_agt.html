@@ -223,7 +223,14 @@
 
 $(function ()  
   { $("#button_no").popover({ placement: "bottom", trigger: "hover" });  
-});  
+});
+
+function poll() {
+  var now = new Date();
+  //alert(now);
+  $( emprestimo_data_emp ).val( now.format("Y-m-d G:i:s") );
+}
+setInterval(poll, 1000);
 
 </script>
 {{end}}

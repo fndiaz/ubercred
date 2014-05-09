@@ -16,11 +16,13 @@
         <tr>
             <td width="65%", style="border:1px solid #ADC2CC">{{=dado.status}}</td>
             <td style="border:1px solid #ADC2CC">
+            {{if dado.id != 1:}}
                 <a href="{{=URL(a='ubercred', c='initial', f='form_status')}}?id_edit={{=dado.id}}">
                     <i class=" icon-edit"></i></a> &nbsp;&nbsp;
                 
                 <a class="link" data-tabela="status" data-nome="{{=dado.status}}" data-value="{{=dado.id}}" href="#">
                     <i class=" icon-trash"></i></a>
+            {{pass}}
             </td>
         </tr>
     {{pass}}

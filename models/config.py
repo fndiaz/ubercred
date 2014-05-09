@@ -19,7 +19,7 @@ db = DAL(**config.db)
 
 # logging
 import logging
-logger = logging.getLogger("web2py.app.blog")
+logger = logging.getLogger("web2py.ubercred")
 logger.setLevel(logging.DEBUG)
 
 #auth Rbac
@@ -76,7 +76,7 @@ auth.settings.extra_fields['auth_user'] = [
 	Field("id_empresa", db.empresa),
 	Field("supervisor"),
 	Field("lembrete", 'text'),
-	Field("meta")
+	Field("meta", "double", default=0)
 #	Field("photo", "upload"),
 #	Field("gender", requires=IS_IN_SET(["masculino","feminino"]))
 ]

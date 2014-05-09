@@ -64,6 +64,8 @@ for row in var:
 #print sup
 db.auth_user.supervisor.requires = IS_EMPTY_OR(IS_IN_SET(sup, 
 	error_message=T("valor inválido")))
+db.auth_user.meta.requires = IS_NOT_EMPTY(error_message=
+	T("valor não pode ser nulo"))
 
 ##auth_user
 #db.auth_user.last_name = IS_EMPTY()

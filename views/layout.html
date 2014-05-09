@@ -37,6 +37,7 @@
   <!-- All JavaScript at the bottom, except for Modernizr which enables
        HTML5 elements & feature detects -->
   <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
+   <script src="{{=URL('static','js/stdlib.js')}}"></script>
 
   <!-- include stylesheets -->
   {{  
@@ -94,7 +95,7 @@
         <div class="span12">
             <div class="page-header">
                 <h2><!--<img src="{{=URL('padrao/static', 'images', 'backup.png')}}">-->
-                    Sistema
+                    SiGC
                     <small>{{=response.title or ''}}</small>
                 </h2>
 
@@ -148,7 +149,7 @@
                 <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
                 <div id="poweredBy" class="pull-right">
                     {{=T('Desenvolvido por')}}
-                    <a href="http://www.aldeiadigital.com.br/">ForIP</a>
+                    <a href="http://www.forip.com.br/">ForIP</a>
                 </div>
                 {{end}}
             </div>

@@ -98,7 +98,7 @@
 
 </div>
 
-{{if session.auth.user.funcao == "agente":}}
+{{if session.auth.user.funcao != "admin":}}
 <div style="margin-left: 950px;">
 <!--<h5>Soma dos contratos: {{=soma}}</h5>-->
 <table style="width:250px" class="table table-bordered">
@@ -110,9 +110,9 @@
     </thread>
     <tbody>
   <tr>
-    <td><span class="label label-success">
-        {{=float(session.auth.user.meta)}}</span></td>
-    {{if float(session.auth.user.meta) > soma:}}
+    <td><span class="label label-success">{{=meta}}</span></td>
+
+    {{if meta > soma:}}
     <td><span class="label label-important">
         {{=soma}}</span></td>
     {{else:}}

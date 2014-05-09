@@ -1,10 +1,10 @@
-timestamp: 2014-05-02T08:56:15.923291
+timestamp: 2014-05-09T12:35:50.070584
 CREATE TABLE empresa(
     id SERIAL PRIMARY KEY,
     nome VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:16.076364
+timestamp: 2014-05-09T12:35:50.253417
 CREATE TABLE auth_user(
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(128),
@@ -19,24 +19,24 @@ CREATE TABLE auth_user(
     id_empresa INTEGER REFERENCES empresa (id) ON DELETE CASCADE,
     supervisor VARCHAR(512),
     lembrete TEXT,
-    meta VARCHAR(512)
+    meta FLOAT8
 );
 success!
-timestamp: 2014-05-02T08:56:16.206071
+timestamp: 2014-05-09T12:35:50.391128
 CREATE TABLE auth_group(
     id SERIAL PRIMARY KEY,
     role VARCHAR(512),
     description TEXT
 );
 success!
-timestamp: 2014-05-02T08:56:16.363710
+timestamp: 2014-05-09T12:35:50.532566
 CREATE TABLE auth_membership(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-05-02T08:56:16.461337
+timestamp: 2014-05-09T12:35:50.623038
 CREATE TABLE auth_permission(
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
@@ -45,7 +45,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2014-05-02T08:56:16.600246
+timestamp: 2014-05-09T12:35:50.759034
 CREATE TABLE auth_event(
     id SERIAL PRIMARY KEY,
     time_stamp TIMESTAMP,
@@ -55,7 +55,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2014-05-02T08:56:16.746830
+timestamp: 2014-05-09T12:35:50.881663
 CREATE TABLE auth_cas(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
@@ -65,38 +65,38 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2014-05-02T08:56:16.902421
+timestamp: 2014-05-09T12:35:51.023346
 CREATE TABLE status(
     id SERIAL PRIMARY KEY,
     status VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:17.019230
+timestamp: 2014-05-09T12:35:51.137103
 CREATE TABLE estados(
     id SERIAL PRIMARY KEY,
     sigla VARCHAR(512),
     nome VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:17.151714
+timestamp: 2014-05-09T12:35:51.254113
 CREATE TABLE orgao(
     id SERIAL PRIMARY KEY,
     nome VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:17.268733
+timestamp: 2014-05-09T12:35:51.386747
 CREATE TABLE banco(
     id SERIAL PRIMARY KEY,
     nome VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:17.401864
+timestamp: 2014-05-09T12:35:51.502330
 CREATE TABLE envio(
     id SERIAL PRIMARY KEY,
     nome VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T08:56:17.546449
+timestamp: 2014-05-09T12:35:51.636513
 CREATE TABLE emprestimo(
     id SERIAL PRIMARY KEY,
     data_emp TIMESTAMP,
@@ -113,11 +113,11 @@ CREATE TABLE emprestimo(
     n_parcelas INTEGER,
     id_empresa INTEGER REFERENCES empresa (id) ON DELETE CASCADE,
     banco INTEGER REFERENCES banco (id) ON DELETE CASCADE,
-    envio INTEGER REFERENCES envio (id) ON DELETE CASCADE,
-    adesao TEXT
+    adesao VARCHAR(512),
+    envio INTEGER REFERENCES envio (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-05-02T08:56:17.688395
+timestamp: 2014-05-09T12:35:51.771892
 CREATE TABLE situacao(
     id SERIAL PRIMARY KEY,
     data_sit TIMESTAMP,
@@ -126,7 +126,7 @@ CREATE TABLE situacao(
     id_status INTEGER REFERENCES status (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-05-02T08:56:17.870246
+timestamp: 2014-05-09T12:35:51.912622
 CREATE TABLE agendamento(
     id SERIAL PRIMARY KEY,
     data_emp VARCHAR(512),
@@ -138,38 +138,3 @@ CREATE TABLE agendamento(
     vendedora VARCHAR(512)
 );
 success!
-timestamp: 2014-05-02T16:12:04.199775
-ALTER TABLE emprestimo ADD teste TEXT;
-timestamp: 2014-05-02T16:14:48.046798
-ALTER TABLE emprestimo ADD n_adesao TEXT;
-timestamp: 2014-05-02T16:14:48.120388
-ALTER TABLE emprestimo DROP COLUMN adesao;
-timestamp: 2014-05-02T16:14:48.193986
-ALTER TABLE emprestimo DROP COLUMN teste;
-timestamp: 2014-05-02T16:18:22.240029
-ALTER TABLE emprestimo ADD adesao TEXT;
-timestamp: 2014-05-02T16:18:22.259075
-ALTER TABLE emprestimo DROP COLUMN n_adesao;
-timestamp: 2014-05-02T16:20:20.446827
-ALTER TABLE emprestimo ADD num_ad TEXT;
-timestamp: 2014-05-02T16:20:20.492022
-ALTER TABLE emprestimo DROP COLUMN adesao;
-timestamp: 2014-05-02T16:21:10.102843
-ALTER TABLE emprestimo ADD teste TEXT;
-timestamp: 2014-05-02T16:21:10.122002
-ALTER TABLE emprestimo DROP COLUMN num_ad;
-timestamp: 2014-05-02T16:22:34.392899
-ALTER TABLE emprestimo ADD adesao TEXT;
-timestamp: 2014-05-02T16:24:19.014955
-ALTER TABLE emprestimo ADD num_ades TEXT;
-timestamp: 2014-05-02T16:24:19.029086
-ALTER TABLE emprestimo DROP COLUMN teste;
-timestamp: 2014-05-02T16:28:36.053863
-ALTER TABLE emprestimo ADD adesao__tmp VARCHAR(512);
-UPDATE emprestimo SET adesao__tmp=adesao;
-ALTER TABLE emprestimo DROP COLUMN adesao;
-ALTER TABLE emprestimo ADD adesao VARCHAR(512);
-UPDATE emprestimo SET adesao=adesao__tmp;
-ALTER TABLE emprestimo DROP COLUMN adesao__tmp;
-timestamp: 2014-05-02T16:28:36.095806
-ALTER TABLE emprestimo DROP COLUMN num_ades;

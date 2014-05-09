@@ -3,11 +3,12 @@ import  json
 from datetime import datetime
 from pprint import pprint
 
-
 @auth.requires_login()
 def principal():
 	func 	= session.auth.user.funcao
 	id_user = session.auth.user.id
+	logger.debug("usr:%s - LOGIN - funcao:%s"\
+		%(session.auth.user.username, func))
 	if func == "supervisor":
 		auth.add_membership(1, id_user)
 		redirect(URL(emprestimo2))
@@ -15,7 +16,6 @@ def principal():
 		auth.add_membership(2, id_user)
 		redirect(URL(form_emprestimo))
 	if func == "admin":
-		print 'aa'
 		auth.add_membership(3, id_user)
 		redirect(URL(emprestimo_admin_total))
 	
@@ -62,7 +62,7 @@ def cpf_json():
 	return response.json(lista)
 
 def cpf_agendamento_json():
-	print ">>>"
+	#print ">>>"
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
 	if session.auth.user.funcao == 'supervisor':
@@ -82,9 +82,8 @@ def cpf_agendamento_json():
 
 	return response.json(lista)
 
-
 def estados_json():
-	print request.vars
+	#print request.vars
 	with open('%s/applications/ubercred/views/estados.json' %(session.raiz)) as json_data:
 		json_data = json.load(json_data)
 		#print json_data[0]
@@ -95,16 +94,16 @@ def estados_json():
 	#return response.render("estados.json")
 
 def cidades_json():
-	print request.vars
+	#print request.vars
 	with open('%s/applications/ubercred/views/cidades.json' %(session.raiz)) as json_data:
 		json_data = json.load(json_data)
-		print(json_data)
+		#print(json_data)
 
 	return response.json(json_data)	
 	#return response.render("cidades.json")
 
 def user():
-	print request.args(0)
+	#print request.args(0)
 	if request.args(0) == 'login':
 			return response.render("login/user.html", 
 										user=auth())
@@ -114,7 +113,7 @@ def user():
 							user=auth.register())
 
 	if request.args(0) == 'not_authorized':
-		print 'nao'
+		print 'nao autorizado'
 
 	if request.args(0) == 'profile':
 		return response.render("login/user.html", 
@@ -140,7 +139,7 @@ def form_empresa():
 
 @auth.requires_membership('admin')
 def empresa():
-	print session
+	#print session
 	response.title = 'empresa'
 	empresa =	db(db.empresa).select(orderby=db.empresa.id)
 
@@ -293,7 +292,7 @@ def agendamento_agt():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	print regis
+	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
@@ -303,6 +302,7 @@ def agendamento_agt():
 	return response.render("initial/list_agendamento.html", agen=agen,
 		end=end, paginacao="on", regis=regis, paginate=paginate, x=x)
 
+@auth.requires(auth.has_membership('supervisor'))
 def agendamento_spv():
 	#print session
 	ano = session.data_hoje.split('-')[0]
@@ -321,7 +321,7 @@ def agendamento_spv():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	print regis
+	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
@@ -335,7 +335,7 @@ def agendamento_admin():
 	#print session
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
-	response.title = 'agendamento'
+	response.title = 'agendamentos'
 	query = (db.agendamento.vendedora == db.auth_user.username)\
 			& (db.agendamento.data_agen.year()==ano)\
 			& (db.agendamento.data_agen.month()==mes)
@@ -348,7 +348,7 @@ def agendamento_admin():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	print regis
+	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
@@ -362,29 +362,27 @@ def agendamento_admin():
 @auth.requires_login()
 def form_emprestimo():
 	id_edit = request.vars['id_edit']
-	print id_edit
-	print session.auth.user
+	#print id_edit
+	#print session.auth.user
 	funcao = session.auth.user.funcao
 	if funcao == "agente":
 		redirect(URL(form_emprestimo_agt))
 	if funcao == "supervisor":
 		if id_edit != None:
 			redirect(URL("initial",
-		"form_emprestimo_spv?id_edit="+id_edit))
+		"form_emprestimo_spv", vars={'id_edit':id_edit}))
 		else:
 			redirect(URL(form_emprestimo_spv))
 	if funcao == "admin":
 		if id_edit != None:
 			redirect(URL("initial",
-		"form_emprestimo_spv?id_edit="+id_edit))
+		"form_emprestimo_spv", vars={'id_edit':id_edit}))
 		else:
 			redirect(URL(form_emprestimo_spv))
 
-
 @auth.requires_login()
 def form_emprestimo_agt():
-	print session.auth.user.meta
-	response.title = 'Emprestimo agente'
+	response.title = 'formulário de cadastro'
 	id_edit = request.vars['id_edit']
 	date = datetime.now()
 	date = date.strftime("%Y-%m-%d %I:%M:%S")
@@ -402,19 +400,19 @@ def form_emprestimo_agt():
 	form_agen 	= SQLFORM(db.agendamento)
 
 	if form.process().accepted:
-		print request.vars
+		#print request.vars
 		session.flash="Registro processado"
 		redirect(URL("form_emprestimo_agt")) 
 	elif form.errors:
-		print request.vars
+		#print request.vars
 		response.flash=("Ops, algo está errado")
 
 	if form_agen.process().accepted:
-		print request.vars
+		#print request.vars
 		session.flash="Registro processado"
 		redirect(URL("form_emprestimo_agt")) 
 	elif form_agen.errors:
-		print request.vars
+		#print request.vars
 		response.flash=("Ops, algo está errado")
 	
 		
@@ -427,7 +425,7 @@ def form_emprestimo_spv():
 	id_edit = request.vars['id_edit']
 	cidade = ""
 	ls_user = get_user()
-	print ls_user
+	#print ls_user
 
 	if id_edit is None:
 		form 	= SQLFORM(db.emprestimo)
@@ -440,14 +438,26 @@ def form_emprestimo_spv():
 		cidade = cidade[0].cidade
 
 	if form.process().accepted:
+		if (request.vars['estado'] != '') & (request.vars['banco'] != ''):
+			check_situacao(request.vars['id'])
 		session.flash=("Registro processado")
-		redirect(URL("principal")) 
+		if session.auth.user.funcao == 'supervisor':
+			redirect(URL("emprestimo2"))
+		if session.auth.user.funcao == 'admin':
+			redirect(URL("emprestimo_admin_total"))
 	else:
 		print request.vars
 	
 	return response.render("initial/form_emprestimo_spv.html", 
 		cidade=cidade, id_edit=id_edit, form=form, ls_user=ls_user)
 
+def check_situacao(id_emp):
+	if db(db.situacao.id_emprestimo == id_emp).count() < 1:
+		logger.debug("usr:%s - INSERCAO_AUTOMATICA - tabela:situacao - status:Iniciado - id_emp:%s"\
+		%(session.auth.user.username, id_emp))
+		date = datetime.now()
+		date = date.strftime("%Y-%m-%d %I:%M:%S")
+		db.situacao.insert(data_sit=date, id_emprestimo=id_emp, id_status=1)
 
 def get_count_agen():
 	# get total agendamentos
@@ -459,8 +469,8 @@ def get_count_agen():
 			& (db.agendamento.data_agen.month()==mes)\
 			& (db.agendamento.data_agen.day()==dia)
 	reg=db(query).count()
-	print query
-	print reg
+	#print query
+	#print reg
 	return reg
 
 def get_user():
@@ -473,18 +483,17 @@ def get_user():
 	ls_user.append(user)
 	ls_user.append(user_emp[0].nome)
 	ls_user.append(user_emp_id)
-	print ls_user
+	#print ls_user
 	return ls_user
 
-
 ###Supervisor pendente
-@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
+@auth.requires(auth.has_membership('supervisor'))
 def emprestimo():
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
-	response.title = "Emprestimos pendentes"
+	response.title = "contratos pendentes"
 	query = (db.emprestimo.id_empresa == db.empresa.id) \
-		& (db.emprestimo.estado == None)\
+		& ((db.emprestimo.estado == None) | (db.emprestimo.banco == None))\
 		& (db.emprestimo.vendedora == db.auth_user.username)\
 		& (db.auth_user.supervisor == session.auth.user.username)\
 		& (db.emprestimo.data_emp.year()==ano)\
@@ -501,7 +510,7 @@ def emprestimo():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	print regis
+	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
@@ -511,11 +520,10 @@ def emprestimo():
 	return response.render("initial/list_emprestimo.html", con=con,
 		end=end, paginacao="on", regis=regis, paginate=paginate, x=x)
 
-
 ##Supervisor total
-@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
+@auth.requires(auth.has_membership('supervisor'))
 def emprestimo2():
-	response.title = "Emprestimos totais"
+	response.title = "contratos totais"
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
 	query = (db.emprestimo.id_empresa == db.empresa.id)\
@@ -523,38 +531,6 @@ def emprestimo2():
 		& (db.auth_user.supervisor == session.auth.user.username)\
 		& (db.emprestimo.data_emp.year()==ano)\
 		& (db.emprestimo.data_emp.month()==mes)
-	#
-	paginate 	=	10
-	if not request.vars.page:
-		redirect(URL(vars={'page':1}))
-	else:
-		page 	=	int(request.vars.page)
-	start 	=	(page-1)*paginate
-	end 	=	page*paginate
-	regis 	=	db(query).count()
-	print regis
-	x=1
-	if regis%paginate == 0:
-		x=0
-	#	
-	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
-	
-	return response.render("initial/list_emprestimo2.html", con=con,
-		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
-
-
-##Agente Total
-def emprestimo_agt():
-	response.title = "Emprestimos"
-	response.alert_badge=get_count_agen()
-	user = session.auth.user.username
-	ano = session.data_hoje.split('-')[0]
-	mes = session.data_hoje.split('-')[1]
-	query = (db.emprestimo.id_empresa == db.empresa.id) &\
-	(db.emprestimo.vendedora == user) &\
-	(db.emprestimo.data_emp.year()==ano) &\
-	(db.emprestimo.data_emp.month()==mes)
-
 	soma = db(query).select(db.emprestimo.valor_total.sum())
 	soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
@@ -571,14 +547,55 @@ def emprestimo_agt():
 	if regis%paginate == 0:
 		x=0
 	#
-
+	if session.auth.user.meta <= 0:
+		query2 = db.auth_user.supervisor == session.auth.user.username
+		meta = db(query2).select(db.auth_user.meta.sum())
+		meta = meta[0]._extra['SUM(auth_user.meta)']
+		#print 'nulo'
+	else:
+		meta = 	session.auth.user.meta
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	
 	return response.render("initial/list_emprestimo2.html", con=con,
-		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma)
+		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
+
+##Agente Total
+def emprestimo_agt():
+	response.title = "Contratos em adamento"
+	response.alert_badge=get_count_agen()
+	user = session.auth.user.username
+	ano = session.data_hoje.split('-')[0]
+	mes = session.data_hoje.split('-')[1]
+	query = (db.emprestimo.id_empresa == db.empresa.id) &\
+	(db.emprestimo.vendedora == user) &\
+	(db.emprestimo.data_emp.year()==ano) &\
+	(db.emprestimo.data_emp.month()==mes)
+	soma = db(query).select(db.emprestimo.valor_total.sum())
+	soma = soma[0]._extra['SUM(emprestimo.valor_total)']
+	#
+	paginate 	=	10
+	if not request.vars.page:
+		redirect(URL(vars={'page':1}))
+	else:
+		page 	=	int(request.vars.page)
+	start 	=	(page-1)*paginate
+	end 	=	page*paginate
+	regis 	=	db(query).count()
+	#print regis
+	x=1
+	if regis%paginate == 0:
+		x=0
+	#
+	meta = session.auth.user.meta
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	
+	return response.render("initial/list_emprestimo2.html", con=con,
+		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
 
 ##Admin total
+@auth.requires(auth.has_membership('admin'))
 def emprestimo_admin_total():
-	response.title = "Emprestimos"
+	response.title = "contratos totais"
 	user = session.auth.user.username
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
@@ -606,13 +623,13 @@ def emprestimo_admin_total():
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
 
 def emprestimo_admin_pen():
-	response.title = "Emprestimos"
+	response.title = "contratos pendentes"
 	user = session.auth.user.username
 	ano = session.data_hoje.split('-')[0]
 	mes = session.data_hoje.split('-')[1]
 	query = (db.emprestimo.data_emp.year()==ano)\
 			& (db.emprestimo.data_emp.month()==mes)\
-			& (db.emprestimo.estado == None)
+			& ((db.emprestimo.estado == None) | (db.emprestimo.banco == None))
 	#soma = db(query).select(db.emprestimo.valor_total.sum())
 	#soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
@@ -634,7 +651,6 @@ def emprestimo_admin_pen():
 	return response.render("initial/list_emprestimo.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
 
-
 def detalhes_emprestimo():
 	response.title = "Detalhes"
 	id_det = request.vars.id_det
@@ -642,7 +658,6 @@ def detalhes_emprestimo():
 		  & (db.orgao.id == db.emprestimo.orgao)\
 		  & (db.envio.id == db.emprestimo.envio)	
 	con=db(query).select()
-	print con
 
 	return response.render("initial/detalhes_emprestimo.html", con=con)
 
@@ -746,15 +761,12 @@ def busca_agendamento():
 	return response.render("initial/list_agendamento.html", agen=agen,
 		paginacao="off")
 
-
-
-
 ##---------------------------Situação
-#@auth.requires_membership('supervisor')
+@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
 def form_situacao():
 	response.title = 'situação'
 	id_emp = request.vars.id_emp
-	print id_emp
+	#print id_emp
 
 	if id_emp is None:
 		form 	= SQLFORM(db.situacao)
@@ -773,9 +785,9 @@ def form_situacao():
 	return response.render("initial/form_situacao.html", form=form, 
 												emp=emp, id_emp=id_emp)	
 
-#@auth.requires_membership('supervisor')
+@auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
 def situacao():
-	print request.vars.id_emp
+	#print request.vars.id_emp
 	id_emp = request.vars.id_emp
 	response.title = "Situação"
 	query = (db.situacao.id_emprestimo == db.emprestimo.id) &\
@@ -789,13 +801,11 @@ def situacao():
 	start 	=	(page-1)*paginate
 	end 	=	page*paginate
 	regis 	=	db(query).count()
-	#print regis
 	x=1
 	if regis%paginate == 0:
 		x=0
 	
 	con = db(query).select(limitby=(start,end), orderby=db.situacao.id)
-	#con = db(query).select()
 	
 	return response.render("initial/list_situacao.html", con=con, id_emp=id_emp, 
 		x=x, end=end, paginacao='on', regis=regis, paginate=paginate) 	
@@ -805,12 +815,10 @@ def users():
 	print 'users'
 	query = (db.auth_user.id_empresa == db.empresa.id)
 	usuarios = db(query).select(orderby=db.auth_user.funcao)
-	#grid 	= SQLFORM.grid(db.auth_user, csv=False, editable=False, 
-	#		deletable=False, details=False, searchable=False)
-	#print usuarios
 	
 	return response.render("initial/list_usuario.html", usuarios=usuarios)
 
+@auth.requires_membership('admin')
 def form_users():
 	response.title = 'Usuários'
 	id_usuario = request.vars['id_edit']
@@ -833,32 +841,35 @@ def form_users():
 		redirect(URL("users"))
 	return response.render("initial/form_users.html", form=form)
 
-
+@auth.requires_membership('admin')
 def group():
-	print 'users'
+	print 'groups'
 	grid 	= SQLFORM.grid(db.auth_group, user_signature=False)
-	#print usuarios
 	
 	return response.render("initial/show_grid.html", grid=grid)
 
+@auth.requires_membership('admin')
 def membership():
-	print 'users'
+	print 'membership'
 	grid 	= SQLFORM.grid(db.auth_membership, user_signature=False)
-	#print usuarios
 	
 	return response.render("initial/show_grid.html", grid=grid)
 
+@auth.requires_login()
 def delete():
 	funcao 	=	request.vars['tabela']
 	id_tab	=	request.vars['id_tab']
-	print funcao
-	print id_tab
+	logger.debug("usr:%s - DELETE - tabelea:%s - id:%s"\
+		%(session.auth.user.username, funcao, id_tab))
 	if funcao 	== "empresa":
 		tabela 	=	 db.empresa.id
 	if funcao 	==	"status":
 		tabela 	= 	db.status.id
 	if funcao 	==	"emprestimo":
-		funcao 	= 	"principal"
+		if session.auth.user.funcao == 'supervisor':
+			funcao 	= 	"emprestimo2"
+		if session.auth.user.funcao == 'admin':
+			funcao 	= 	"emprestimo_admin_total"
 		tabela 	= 	db.emprestimo.id
 	if funcao 	==	"situacao":
 		tabela 	= 	db.situacao.id
