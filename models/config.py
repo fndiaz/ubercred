@@ -36,6 +36,7 @@ auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 #auth.settings.formstyle = "divs"
 auth.settings.actions_disabled = ['register']
+#auth.settings.on_failed_authorization =  URL(a='ubercred', c='initial', f='user/not_authorized', vars={'page':request.args})
 
 auth.messages.logged_in = 'Bem Vindo' 
 auth.messages.logged_out = 'Até logo'

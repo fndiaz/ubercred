@@ -1,7 +1,13 @@
 {{extend 'layout.html'}}
 
 {{block center}}
+{{if session.auth.user.funcao == 'admin':}}
+<a id="button" class="btn btn-primary" href="{{=URL('initial','emprestimo_total_admin')}}" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;"><i class="icon-share-alt icon-white"></i> Voltar</a>
+{{pass}}
+{{if session.auth.user.funcao == 'supervisor':}}
 <a id="button" class="btn btn-primary" href="{{=URL('initial','emprestimo2')}}" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;"><i class="icon-share-alt icon-white"></i> Voltar</a>
+{{pass}}
+
 
 <div class='row'>
 <div class="span5">

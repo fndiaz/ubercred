@@ -7,8 +7,9 @@ from pprint import pprint
 def principal():
 	func 	= session.auth.user.funcao
 	id_user = session.auth.user.id
-	logger.debug("usr:%s - LOGIN - funcao:%s"\
-		%(session.auth.user.username, func))
+	logger.debug("usr:%s - LOGIN - ip:%s - br:%s - funcao:%s"\
+		%(session.auth.user.username, request.env.remote_addr,\
+		  session._user_agent['browser'], func))
 	if func == "supervisor":
 		auth.add_membership(1, id_user)
 		redirect(URL(emprestimo2))
@@ -104,8 +105,10 @@ def cidades_json():
 
 def user():
 	#print request.args(0)
-	if request.args(0) == 'login':
-			return response.render("login/user.html", 
+	if request.args(0) == 'login': 
+		logger.debug("ip:%s - ACCESS_LOGIN_PAGE"\
+		%(request.env.remote_addr))
+		return response.render("login/user.html", 
 										user=auth())
 
 	if request.args(0) == 'register':
@@ -113,11 +116,16 @@ def user():
 							user=auth.register())
 
 	if request.args(0) == 'not_authorized':
-		print 'nao autorizado'
+		logger.warning("usr:%s - ACCESS_DENIED - ip:%s"\
+		%(session.auth.user.username, request.env.remote_addr))
 
 	if request.args(0) == 'profile':
 		return response.render("login/user.html", 
 							user=auth.profile())
+
+	if request.args(0) == 'logout':
+		logger.debug("usr:%s - LOGOUT "\
+			%(session.auth.user.username))
 
 	return response.render("login/user.html", user=auth())
 
@@ -133,6 +141,8 @@ def form_empresa():
 		form 	= SQLFORM(db.empresa, id_edit)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:empresa - nome:%s"\
+		%(session.auth.user.username, request.vars.nome))
 		redirect(URL("empresa"))
 
 	return response.render("initial/show_form.html", form=form)
@@ -158,6 +168,8 @@ def form_status():
 		form 	= SQLFORM(db.status, id_edit)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:status - nome:%s"\
+		%(session.auth.user.username, request.vars.status))
 		redirect(URL("status"))
 
 	return response.render("initial/show_form.html", form=form)	
@@ -207,6 +219,8 @@ def form_envio():
 		form 	= SQLFORM(db.envio, id_edit)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:envio - nome:%s"\
+		%(session.auth.user.username, request.vars.nome))
 		redirect(URL("envio"))
 
 	return response.render("initial/show_form.html", form=form)
@@ -232,6 +246,8 @@ def form_banco():
 		form 	= SQLFORM(db.banco, id_edit)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:banco - nome:%s"\
+		%(session.auth.user.username, request.vars.nome))
 		redirect(URL("banco"))
 
 	return response.render("initial/show_form.html", form=form)
@@ -257,6 +273,8 @@ def form_orgao():
 		form 	= SQLFORM(db.orgao, id_edit)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:orgao - nome:%s"\
+		%(session.auth.user.username, request.vars.nome))
 		redirect(URL("orgao"))
 
 	return response.render("initial/show_form.html", form=form)
@@ -400,19 +418,23 @@ def form_emprestimo_agt():
 	form_agen 	= SQLFORM(db.agendamento)
 
 	if form.process().accepted:
-		#print request.vars
 		session.flash="Registro processado"
+		logger.debug("usr:%s - INSERT - tabela:emprestimo - cpf:%s - nome:%s"\
+		%(session.auth.user.username, request.vars.cpf, request.vars.nome))
 		redirect(URL("form_emprestimo_agt")) 
 	elif form.errors:
-		#print request.vars
+		logger.error("usr:%s - FORM_ERROR - tabela:emprestimo - req:%s"\
+		%(session.auth.user.username, request.vars))
 		response.flash=("Ops, algo está errado")
 
 	if form_agen.process().accepted:
-		#print request.vars
+		logger.debug("usr:%s - INSERT - tabela:agendamento - cpf:%s - nome:%s"\
+		%(session.auth.user.username, request.vars.cpf, request.vars.nome))
 		session.flash="Registro processado"
 		redirect(URL("form_emprestimo_agt")) 
 	elif form_agen.errors:
-		#print request.vars
+		logger.error("usr:%s - FORM_ERROR - tabela:agendamento - req:%s"\
+		%(session.auth.user.username, request.vars))
 		response.flash=("Ops, algo está errado")
 	
 		
@@ -440,7 +462,10 @@ def form_emprestimo_spv():
 	if form.process().accepted:
 		if (request.vars['estado'] != '') & (request.vars['banco'] != ''):
 			check_situacao(request.vars['id'])
+		logger.debug("usr:%s - EDIT - tabela:emprestimo - cpf:%s - id:%s"\
+		%(session.auth.user.username, request.vars.cpf, id_edit))
 		session.flash=("Registro processado")
+
 		if session.auth.user.funcao == 'supervisor':
 			redirect(URL("emprestimo2"))
 		if session.auth.user.funcao == 'admin':
@@ -453,7 +478,7 @@ def form_emprestimo_spv():
 
 def check_situacao(id_emp):
 	if db(db.situacao.id_emprestimo == id_emp).count() < 1:
-		logger.debug("usr:%s - INSERCAO_AUTOMATICA - tabela:situacao - status:Iniciado - id_emp:%s"\
+		logger.debug("usr:%s - INSERT_AUTOMATICA - tabela:situacao - status:Iniciado - id_emp:%s"\
 		%(session.auth.user.username, id_emp))
 		date = datetime.now()
 		date = date.strftime("%Y-%m-%d %I:%M:%S")
@@ -551,10 +576,9 @@ def emprestimo2():
 		query2 = db.auth_user.supervisor == session.auth.user.username
 		meta = db(query2).select(db.auth_user.meta.sum())
 		meta = meta[0]._extra['SUM(auth_user.meta)']
-		#print 'nulo'
 	else:
 		meta = 	session.auth.user.meta
-	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
 	
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
@@ -587,7 +611,7 @@ def emprestimo_agt():
 		x=0
 	#
 	meta = session.auth.user.meta
-	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
 	
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
@@ -618,7 +642,7 @@ def emprestimo_admin_total():
 		x=0
 	#
 
-	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=db.emprestimo.id)
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
 
@@ -684,6 +708,7 @@ def busca_emp_total():
 	mes = request.vars.mes
 	cpf = request.vars.cpf
 	soma=""
+	res_pesquisa=True
 	ano = session.data_hoje.split('-')[0]
 	if session.auth.user.funcao == "supervisor":
 		query = (db.emprestimo.id_empresa == db.empresa.id)\
@@ -717,18 +742,34 @@ def busca_emp_total():
 			query = (db.emprestimo.cpf == request.vars.cpf)
 		if request.vars.cpf == "":
 			query = (db.emprestimo.data_emp.year()==ano)\
-					& (db.emprestimo.data_emp.month()==mes)		
+					& (db.emprestimo.data_emp.month()==mes)
 
-	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), 
-		orderby=db.emprestimo.id)
+	#
+	paginate 	=	10
+	if not request.vars.page:
+		redirect(URL(vars={'page':1, 'mes':mes, 'cpf':cpf}))
+	else:
+		page 	=	int(request.vars.page)
+	start 	=	(page-1)*paginate
+	end 	=	page*paginate
+	regis 	=	db(query).count()
+	x=1
+	if regis%paginate == 0:
+		x=0
+	#
+
+	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
+	if db(query).count() == 0:
+		res_pesquisa = False
 	
-	return response.render("initial/list_emprestimo_busca.html", 
-		con=con, paginacao="off", soma=soma)
+	return response.render("initial/list_emprestimo_busca.html", con=con, soma=soma,
+		paginacao='on', end=end, regis=regis, paginate=paginate, x=x, res_pesquisa=res_pesquisa)
 
 def busca_agendamento():
 	mes = request.vars.mes
 	cpf = request.vars.cpf
 	ano = session.data_hoje.split('-')[0]
+	res_pesquisa = True
 	if session.auth.user.funcao == "supervisor":
 		query = (db.agendamento.vendedora == db.auth_user.username)&\
 				(db.auth_user.supervisor == session.auth.user.username)\
@@ -756,17 +797,32 @@ def busca_agendamento():
 			query = (db.agendamento.vendedora == db.auth_user.username)\
 					& (db.agendamento.data_agen.year()==ano)\
 					& (db.agendamento.data_agen.month()==mes)
+	#
+	paginate 	=	10
+	if not request.vars.page:
+		redirect(URL(vars={'page':1, 'mes':mes, 'cpf':cpf}))
+	else:
+		page 	=	int(request.vars.page)
+	start 	=	(page-1)*paginate
+	end 	=	page*paginate
+	regis 	=	db(query).count()
+	x=1
+	if regis%paginate == 0:
+		x=0
+	#
 
-	agen =	db(query).select()
-	return response.render("initial/list_agendamento.html", agen=agen,
-		paginacao="off")
+	agen =	db(query).select(limitby=(start,end))
+	if db(query).count() == 0:
+		res_pesquisa = False
+
+	return response.render("initial/list_agendamento_busca.html", agen=agen,
+		paginacao='on', end=end, regis=regis, paginate=paginate, x=x, res_pesquisa=res_pesquisa)
 
 ##---------------------------Situação
 @auth.requires(auth.has_membership('supervisor') or auth.has_membership('admin'))
 def form_situacao():
 	response.title = 'situação'
 	id_emp = request.vars.id_emp
-	#print id_emp
 
 	if id_emp is None:
 		form 	= SQLFORM(db.situacao)
@@ -777,6 +833,8 @@ def form_situacao():
 		form 	= SQLFORM(db.situacao)
 
 	if form.process().accepted:
+		logger.debug("usr:%s - INSERT - tabela:situacao - id_emp:%s - id_status:%s"\
+		%(session.auth.user.username, id_emp, request.vars.id_status))
 		session.flash=("Registro processado")
 		redirect(URL("situacao?id_emp=%s" %(id_emp))) 
 	else:
@@ -838,6 +896,8 @@ def form_users():
 	form.element(_name='supervisor')['_class'] = "form-control"
 
 	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:auth_user - nome:%s"\
+		%(session.auth.user.username, request.vars.username))
 		redirect(URL("users"))
 	return response.render("initial/form_users.html", form=form)
 
@@ -859,8 +919,8 @@ def membership():
 def delete():
 	funcao 	=	request.vars['tabela']
 	id_tab	=	request.vars['id_tab']
-	logger.debug("usr:%s - DELETE - tabelea:%s - id:%s"\
-		%(session.auth.user.username, funcao, id_tab))
+	logger.debug("usr:%s - DELETE - tabelea:%s - id:%s - ip:%s"\
+		%(session.auth.user.username, funcao, id_tab, request.env.remote_addr))
 	if funcao 	== "empresa":
 		tabela 	=	 db.empresa.id
 	if funcao 	==	"status":

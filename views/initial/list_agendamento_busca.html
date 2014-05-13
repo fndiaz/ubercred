@@ -1,18 +1,15 @@
 {{extend 'layout.html'}}
-<!--Emprestimos Totais-->
+
 
 {{block center}}
-<div style="margin-left:-30px; margin-right:-30px">
 
-{{if session.auth.user.funcao == 'admin':}}
-<div class="a" style="float:left; position:relative">
-<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}" >Adicionar</button>&nbsp;&nbsp;
-</div>
+{{if session.auth.user.funcao != 'agente':}}
+<!--<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}" >Adicionar</button>-->
 {{pass}}
 
 <div class="a" style="float:left; position:relative; margin-left:0px">
-<form action="busca_emp_total" method="POST">
-<input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="">
+<form action="busca_agendamento" method="POST">
+<input id="busca_agendamento" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="">
 {{if session.auth.user.funcao != 'agente':}}
 <select class="generic-widget" id="busca_mes" style="width:100px; height:28px" name="mes"><option value=""></option>
 <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select>
@@ -20,52 +17,48 @@
 <!--<input class="btn btn-primary" type="submit" name="Pesquisa" value="Pesquisar">-->
 <button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
 </form>
-</div><br>
+</div>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Data</th>
+            <th>Data do agen.</th>
             <th>Nome</th>
             <th>Cpf</th>
-            <th>V total</th>
-            <th>Status</th>
+            <th>telefone</th>
+            {{if session.auth.user.funcao != 'agente':}}<th>Agente</th>{{pass}}
+            <th>Obs</th>
             <th>#</th>
         </tr>
     </thead>
     <tbody>
-    {{for dado in con:}}
-    {{print dado}}
+    {{for dado in agen:}}
         <tr>
-            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.data_emp}}</td>
-            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.nome}}</td>
+            {{if session.auth.user.funcao == 'agente':}}
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.data_agen}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.nome}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.cpf}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.telefone}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.obs}}</td>
+            {{else:}}
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.data_agen}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.nome}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.cpf}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.telefone}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.vendedora}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.obs}}</td>
+            {{pass}}
             <td style="border:1px solid #ADC2CC">
-                {{if session.auth.user.funcao != 'agente':}}
-                    <a href="{{=URL(a='ubercred', c='initial', f='situacao')}}?id_emp={{=dado.emprestimo.id}}">
-                {{pass}}
-                {{=dado.emprestimo.cpf}}</a>    
-            </td>
-            <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_total}}</td>
-            <td style="border:1px solid #ADC2CC">
-            {{if db(db.situacao.id_emprestimo == dado.emprestimo.id).count() > 0:
-                id_status = db(db.situacao.id_emprestimo == dado.emprestimo.id).select().as_list()[-1]['id_status']
-                =db(db.status.id == id_status).select(db.status.status)[0].status
-            pass}}
-            </td>
-
-            <td style="border:1px solid #ADC2CC">
-                {{if session.auth.user.funcao != 'agente':}}
-                <!--<a href="{{=URL(a='ubercred', c='initial', f='situacao')}}?id_emp={{=dado.emprestimo.id}}">
-                    <i class=" icon-hand-up"></i></a> &nbsp;&nbsp;-->
-                <a href="{{=URL(a='ubercred', c='initial', f='form_emprestimo')}}?id_edit={{=dado.emprestimo.id}}">
+            {{if session.auth.user.funcao != 'agente':}}
+                <!--<a href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}?id_edit={{=dado.agendamento.id}}">
                     <i class=" icon-edit"></i></a> &nbsp;&nbsp;
-                <a href="{{=URL(a='ubercred', c='initial', f='detalhes_emprestimo')}}?id_det={{=dado.emprestimo.id}}">
-                    <i class=" icon-zoom-in"></i></a> &nbsp;&nbsp;
-                
-                <a class="link" data-tabela="emprestimo" data-nome="{{=dado.emprestimo.nome}}" data-value="{{=dado.emprestimo.id}}" href="#">
-                    <i class=" icon-trash"></i></a>
-                {{pass}}
+
+                <a class="link" data-tabela="funcao" data-nome="{{=dado.agendamento.nome}}" data-value="{{=dado.agendamento.id}}" href="#">
+                    <i class=" icon-trash"></i></a>-->
+            {{pass}}
             </td>
+            {{pass}}
+
         </tr>
     {{pass}}
     </tbody>
@@ -94,7 +87,7 @@ Nenhum resultado foi encontrado</h4>
         {{if num == int(request.vars.page):}}
         <li class="active"><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf})}}>{{=num}}</a></li>
         {{else:}}
-        <li><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf})}}>{{=num}}</a></li>
+        <li><a href={{=URL(vars={'page':num})}}>{{=num}}</a></li>
         {{pass}}
         {{pass}}
 
@@ -105,9 +98,6 @@ Nenhum resultado foi encontrado</h4>
     </ul>
 </div>
 {{pass}}
-</div>
-
-
 
 <script>
 var links = document.querySelectorAll('.link');
@@ -128,22 +118,23 @@ for (x in links) {
 
 $.ajax({
 method: "get",
-url: "initial/cpf_json?func=total",
+url: "initial/cpf_agendamento_json",
 dataType: "json",
 success: function(nome){
-  $('#busca_emp_total').typeahead({source: nome});
+  $('#busca_agendamento').typeahead({source: nome});
 }
 });
 
 </script>
+
 {{end}}
 
 
 {{block alert}}
 {{if session.auth.user.funcao == "agente":}}
 {{if response.alert_badge > 0:}}
-<a href="{{=URL(a='ubercred', c='initial', f='agendamento_agt')}}">
-  <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Você tem {{=response.alert_badge}} agendamentos para a data de hoje" data-original-title="Importante">
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+  <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Abaixo estão seus {{=response.alert_badge}} agendamentos" data-original-title="Importante">
     <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
   </span>
 </a>

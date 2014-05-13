@@ -1,0 +1,76 @@
+{{extend 'layout.html'}}
+<!--SEM USO!!!!!!-->
+
+{{block center}}
+
+{{if session.auth.user.funcao != 'agente':}}
+<button type="button" class="btn btn-primary" onclick=location.href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}" >Adicionar</button>
+{{pass}}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data do agen.</th>
+            <th>Nome</th>
+            <th>Cpf</th>
+            <th>telefone</th>
+            <th>Agente</th>
+            <th>Obs</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{for dado in agen:}}
+        <tr>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.data_emp}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.nome}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.cpf}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.telefone}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.vendedora}}</td>
+            <td width="", style="border:1px solid #ADC2CC">{{=dado.agendamento.obs}}</td>
+            <td style="border:1px solid #ADC2CC">
+                {{if session.auth.user.funcao != 'agente':}}
+                <a href="{{=URL(a='ubercred', c='initial', f='form_funcao')}}?id_edit={{=dado.id}}">
+                    <i class=" icon-edit"></i></a> &nbsp;&nbsp;
+
+                <a class="link" data-tabela="funcao" data-nome="{{=dado.nome}}" data-value="{{=dado.id}}" href="#">
+                    <i class=" icon-trash"></i></a>
+                {{pass}}
+            </td>
+        </tr>
+    {{pass}}
+    </tbody>
+</table>
+
+<script>
+var links = document.querySelectorAll('.link');
+for (x in links) {
+    links[x].onclick = function() { 
+    var data_attr = this.dataset;
+    //alert(data_attr.value);
+    var id   = data_attr.value;
+    var nome = data_attr.nome;
+    var tabela= data_attr.tabela;
+    decisao = confirm("Tem certeza que deseja remover o item "+nome);
+        if(decisao){
+            location.href="{{=URL(a='ubercred', c='initial', f='delete')}}?id_tab="+id+"&tabela="+tabela+";"
+        }
+    return false;
+    }
+}
+</script>
+
+{{end}}
+
+
+{{block alert}}
+{{if session.auth.user.funcao == "agente":}}
+{{if response.alert_badge > 0:}}
+<a href="{{=URL(a='ubercred', c='initial', f='agendamento')}}">
+  <span id="alerta_badge" class="badge badge-important" rel="popover" data-content="Abaixo estão seus {{=response.alert_badge}} agendamentos" data-original-title="Importante">
+    <i class="icon-bell icon-white"></i>{{=response.alert_badge}}
+  </span>
+</a>
+{{pass}}
+{{pass}}
+{{end}}
