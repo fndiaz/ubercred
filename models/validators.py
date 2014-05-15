@@ -9,6 +9,7 @@
 
 #db.emprestimo.estado.requires = IS_IN_DB(db, 'estados.id', '%(nome)s', zero=T('escolha um'), 
 #	error_message=T("valor inválido"))
+#db.user_ponto.tipo.requires = IS_IN_DB(query,'tipos.id','%(descricao)s')
 
 
 ##Empréstimo

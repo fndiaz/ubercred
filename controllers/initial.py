@@ -182,31 +182,6 @@ def status():
 	return response.render("initial/list_status.html", 
 		status=status)
 
-##---------------------------Funcao
-@auth.requires_membership('admin')
-def form_funcao():
-	response.title = 'contrato'
-	id_edit	= request.vars['id_edit']
-
-	if id_edit is None:
-		form 	= SQLFORM(db.funcao)
-	else:
-		form 	= SQLFORM(db.funcao, id_edit)
-
-	if form.process().accepted:
-		redirect(URL("funcao"))
-
-	return response.render("initial/show_form.html", form=form)
-
-@auth.requires_membership('admin')
-def funcao():
-	#print session
-	response.title = 'contrato'
-	funcao =	db(db.funcao).select(orderby=db.funcao.id)
-
-	return response.render("initial/list_funcao.html", 
-		funcao=funcao)
-
 ##---------------------------Envio
 @auth.requires_membership('admin')
 def form_envio():

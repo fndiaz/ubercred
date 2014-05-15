@@ -13,7 +13,8 @@
 
 <div class="a" style="float:left; position:relative; margin-left:0px">
 <form action="busca_emp_total" method="POST">
-<input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="">
+<input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="" placeholder="CPF para busca">
+
 {{if session.auth.user.funcao != 'agente':}}
 <select class="generic-widget" id="busca_mes" style="width:100px; height:28px" name="mes"><option value=""></option>
 <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select>
