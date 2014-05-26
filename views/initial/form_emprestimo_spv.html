@@ -23,8 +23,8 @@
 <div>{{=form.custom.widget.cpf}}</div>
 <br>
 
-<label>telefone:</label> 
-<div style="margin-left: -26px;">{{=form.custom.widget.telefone}}</div>
+<label>adesão</label> 
+<div>{{=form.custom.widget.adesao}}</div>
 <br>
 
 <label>estado:</label> 
@@ -49,6 +49,9 @@
 <br>
 {{pass}}
 {{pass}}
+
+<label>Produto</label> 
+<div>{{=form.custom.widget.id_produto}}</div>
 
 </div>
 </div><!--span5-->
@@ -109,8 +112,8 @@
 <div>{{=form.custom.widget.envio}}</div>
 <br>
 
-<label>adesão</label> 
-<div>{{=form.custom.widget.adesao}}</div>
+<label>telefone:</label> 
+<div style="margin-left: -26px;">{{=form.custom.widget.telefone}}</div>
 <br>
 
 </div><!--span5-->
@@ -120,6 +123,7 @@
 <button style="margin-left: 50px; margin-top: 0px; margin-bottom: 5px;"type="submit" value="testaa" class="btn btn-primary">Enviar</button>
 {{=form.custom.end}}
 
+<script src="{{=URL('static','js/jquery.maskMoney.js')}}"></script>
 <script>
    $("#emprestimo_estado").change(function(){
     var msg = $("#emprestimo_estado").val();
@@ -142,5 +146,11 @@
          }
       });
    });
+
+$(function() {
+   $('#emprestimo_valor_total').maskMoney({thousands:'', decimal:'.'});
+   $('#emprestimo_valor_parcela').maskMoney({thousands:'', decimal:'.'});
+})
+
 </script>
 {{end}}

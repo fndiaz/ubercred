@@ -10,18 +10,48 @@
 </div>
 {{pass}}
 
+<!--Busca-->
 <div class="a" style="float:left; position:relative; margin-left:0px">
 <form action="busca_emp_total" method="POST">
+
 <input id="busca_emp_total" name="cpf" class="span3" type="text" autocomplete="off" style="margin: 0 auto; width:190px" data-provide="typeahead" data-items="4" data-source="" placeholder="CPF para busca">
 
 {{if session.auth.user.funcao != 'agente':}}
 <select class="generic-widget" id="busca_mes" style="width:100px; height:28px" name="mes"><option value=""></option>
-<option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select>
+<option value="01">Janeiro</option>
+<option value="02">Fevereiro</option>
+<option value="03">Março</option>
+<option value="04">Abril</option>
+<option value="05">Maio</option>
+<option value="06">Junho</option>
+<option value="07">Julho</option>
+<option value="08">Agosto</option>
+<option value="09">Setembro</option>
+<option value="10">Outubro</option>
+<option value="11">Novembro</option>
+<option value="12">Dezembro</option>
+</select>
 {{pass}}
-<!--<input class="btn btn-primary" type="submit" name="Pesquisa" value="Pesquisar">-->
+
+{{
+mostra2='display:none;'
+if session.auth.user.funcao == 'admin':
+    mostra2=''
+pass
+}}
+<select class="generic-widget" id="sup" style="{{=mostra2}}width:150px; height:28px" name="sup">
+<option value=""></option>
+{{
+opc=db(db.auth_user.funcao == 'supervisor').select(db.auth_user.username)
+for opcao in opc:}}
+<option value="{{=opcao.username}}">{{=opcao.username}}</option>
+{{pass}}
+</select>
+
 <button type="submit" class="btn btn-primary" name="Pesquisa"><i class=" icon-search icon-white"></i></button>
 </form>
 </div><br>
+<!--FIM Busca-->
 
 <table class="table table-striped">
     <thead>
@@ -30,6 +60,7 @@
             <th>Nome</th>
             <th>Cpf</th>
             <th>V total</th>
+            <th>Produto</th>
             <th>Status</th>
             <th>#</th>
         </tr>
@@ -47,6 +78,13 @@
                 {{=dado.emprestimo.cpf}}</a>    
             </td>
             <td style="border:1px solid #ADC2CC">{{=dado.emprestimo.valor_total}}</td>
+            <td style="border:1px solid #ADC2CC">
+            {{
+                if not db(db.produto.id == dado.emprestimo.id_produto).isempty():
+                    =db(db.produto.id == dado.emprestimo.id_produto).select()[0]['nome']
+                pass
+            }}
+            </td>
             <td style="border:1px solid #ADC2CC">
             {{if db(db.situacao.id_emprestimo == dado.emprestimo.id).count() > 0:
                 id_status = db(db.situacao.id_emprestimo == dado.emprestimo.id).select().as_list()[-1]['id_status']
@@ -81,27 +119,28 @@ Nenhum resultado foi encontrado</h4>
 {{
     mes = request.vars.mes
     cpf = request.vars.cpf
+    sup = request.vars.sup
 }}
 <!-- Paginacao -->
 {{if paginacao == 'on':}}
 <div class="pagination">
     <ul class="pagination">
         {{if end != paginate:}}<!--maior que 10 não escreve anterior-->
-        <li><a href={{=URL(vars={'page':int(request.vars.page)-1, 'mes':mes, 'cpf':cpf})}}>Anterior</a></li>
+        <li><a href={{=URL(vars={'page':int(request.vars.page)-1, 'mes':mes, 'cpf':cpf, 'sup':sup})}}>Anterior</a></li>
         {{pass}}
 
         {{for num in range((regis // paginate)+x):
             num = num +1}}
         {{if num == int(request.vars.page):}}
-        <li class="active"><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf})}}>{{=num}}</a></li>
+        <li class="active"><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf, 'sup':sup})}}>{{=num}}</a></li>
         {{else:}}
-        <li><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf})}}>{{=num}}</a></li>
+        <li><a href={{=URL(vars={'page':num, 'mes':mes, 'cpf':cpf, 'sup':sup})}}>{{=num}}</a></li>
         {{pass}}
         {{pass}}
 
         {{if not end >= regis:}}<!--nao escreve proximo (ultima pagina)-->
         <li class="active">
-        <li><a href={{=URL(vars={'page':int(request.vars.page)+1, 'mes':mes, 'cpf':cpf})}}>Próximo</a></li>
+        <li><a href={{=URL(vars={'page':int(request.vars.page)+1, 'mes':mes, 'cpf':cpf, 'sup':sup})}}>Próximo</a></li>
         {{pass}}
     </ul>
 </div>

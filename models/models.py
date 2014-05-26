@@ -21,6 +21,10 @@ db.define_table("envio",
 	Field("nome"),
 	format="%(nome)s")
 
+db.define_table("produto",
+	Field("nome"),
+	format="%(nome)s")
+
 db.define_table("emprestimo",
 	Field("data_emp", "datetime"),
 	Field("nome", "string", length=60),
@@ -38,6 +42,7 @@ db.define_table("emprestimo",
 	Field("banco", db.banco),
 	Field("adesao", "string"),
 	Field("envio", db.envio),
+	Field("id_produto", db.produto),
 	format="%(nome)s")
 
 db.define_table("situacao",

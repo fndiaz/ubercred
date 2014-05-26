@@ -4,16 +4,22 @@
 <a id="button" class="btn btn-primary" href="#myModal" data-toggle="modal" rel="popover" data-content="" data-original-title="Clique para agendar" style="margin-left: 1050px; margin-top: -50px; margin-bottom: 5px;">Agendar</a>
 
 
+<div class="alert alert-error" style="display: none">
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+    <strong>Atenção!</strong> Nos campos de "valor total" e "valor parcela" depois do ponto somente os centavos!
+</div>
+
 <div class='row'>
 <div class="span5">
 <div class="well">
 {{=form.custom.begin}}
 
 <div>
-<label>orgão:</label> 
+<label id="este" data-toggle="tooltip" title="first tooltip">orgão:</label> 
 <div>{{=form.custom.widget.orgao}}</div>
 <br>
 </div>
+
 
 <div>
 <label>data:</label>
@@ -52,6 +58,11 @@
 </option></select></div>
 </div>
 
+<div style="display: none;">
+<label>Produto:</label> 
+<div>{{=form.custom.widget.produto}}</div>
+<br>
+</div>
 
 </div><!--well-->
 </div><!--span5-->
@@ -89,6 +100,8 @@
 <div>{{=form.custom.widget.n_parcelas}}</div>
 <br>
 </div>
+
+<input id='multi' type="checkbox" name="multi" value="on" {{=checkbox}}><span id='multit'> Mútiplos contratos</span><br>
 
 <div style="display: none;">
 <label>banco:</label> 
@@ -146,7 +159,6 @@
     <!--<input class="" id="agendamento_data_agen" name="data_agen" type="text" value="aaa-mm-dd">-->
     </div><br>
 
-
     <div>
     <label>Cpf</label>  
     {{=form_agen.custom.widget.cpf}}
@@ -180,7 +192,8 @@
 
 <!--</div>--><!--margin-->
 
-
+<script src="{{=URL('static','js/jquery.maskMoney.js')}}"></script>
+<script src="{{=URL('static','js/jquery.maskedinput.js')}}"></script>
 <script>
   $("#button").click(function(){
     var nome  = document.getElementById('emprestimo_nome').value;
@@ -231,6 +244,47 @@ function poll() {
   $( emprestimo_data_emp ).val( now.format("Y-m-d G:i:s") );
 }
 setInterval(poll, 1000);
+
+$(function() {
+    $('#emprestimo_valor_total').maskMoney({thousands:'', decimal:'.'});
+    $('#emprestimo_valor_parcela').maskMoney({thousands:'', decimal:'.'});
+})
+
+// validar telefone
+//$('#emprestimo_telefone').mask("(99) 9999-9999?9").ready(function(event) {
+//    var target, phone, element;
+//    target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+//    phone = target.value.replace(/\D/g, '');
+//    element = $(target);
+//    element.unmask();
+//    if(phone.length > 10) {
+//        element.mask("(99) 99999-999?9");
+//    } else {
+//        element.mask("(99) 9999-9999?9");  
+//    }
+//});
+$(function (){ 
+$("#emprestimo_valor_total").popover({trigger: "focus", title: 'Centavos depois do ponto', content: "5000.20 corresponde a Cinco mil reais e vinte centavos" }) 
+    .blur(function () {
+      $(this).popover('hide');
+    });
+
+$("#emprestimo_valor_parcela").popover({trigger: "focus", title: 'Centavos depois do ponto', content: "5000.00 corresponde a Cinco mil reais e zero centavos", animation : 'toogle' })
+  .blur(function () {
+      $(this).popover('hide');
+  });
+ 
+$("#multi").popover({trigger: "hover", title: 'Reutiliza campos preenchidos', content: "Clique caso for fazer um novo cadastro dessa mesma pessoa", animation : 'toogle' })
+
+$("#multit").popover({trigger: "hover", title: 'Reutiliza campos preenchidos', content: "Agiliza o cadastro de contratos de uma mesma pessoa trazendo os campos já preenchidos", animation : 'toogle' })
+
+});
+
+//$(".alert").show();
+
+$("#emprestimo_valor_total").focus(function(){
+  $(".alert").show();
+});
 
 </script>
 {{end}}

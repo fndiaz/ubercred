@@ -138,3 +138,15 @@ CREATE TABLE agendamento(
     vendedora VARCHAR(512)
 );
 success!
+timestamp: 2014-05-21T17:07:11.047910
+CREATE TABLE produto(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(512)
+);
+success!
+timestamp: 2014-05-21T17:07:11.834264
+ALTER TABLE emprestimo ADD produto INTEGER REFERENCES produto (id) ON DELETE CASCADE;
+timestamp: 2014-05-21T17:21:27.744189
+ALTER TABLE emprestimo ADD id_produto INTEGER REFERENCES produto (id) ON DELETE CASCADE;
+timestamp: 2014-05-21T17:21:27.773365
+ALTER TABLE emprestimo DROP COLUMN produto;

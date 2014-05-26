@@ -40,7 +40,8 @@ else:
             (T('Status'), False, URL("initial", "status")),
             (T('Bancos'), False, URL("initial", "banco")),
             (T('Orgãos'), False, URL("initial", "orgao")),
-            (T('Envio'), False, URL("initial", "envio"))
+            (T('Envio'), False, URL("initial", "envio")),
+            (T('Produtos'), False, URL("initial", "produto"))
         ])
         ]    
     if session.auth.user.funcao == "supervisor":

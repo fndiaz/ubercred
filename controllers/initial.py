@@ -263,6 +263,33 @@ def orgao():
 	return response.render("initial/list_orgao.html", 
 		orgao=orgao)
 
+##---------------------------Produto
+@auth.requires_membership('admin')
+def form_produto():
+	response.title = 'produto'
+	id_edit	= request.vars['id_edit']
+
+	if id_edit is None:
+		form 	= SQLFORM(db.produto)
+	else:
+		form 	= SQLFORM(db.produto, id_edit)
+
+	if form.process().accepted:
+		logger.debug("usr:%s - ADD/INSERT - tabela:produto - nome:%s"\
+		%(session.auth.user.username, request.vars.nome))
+		redirect(URL("produto"))
+
+	return response.render("initial/show_form.html", form=form)
+
+@auth.requires_membership('admin')
+def produto():
+	#print session
+	response.title = 'produto'
+	produto = db(db.produto).select(orderby=db.produto.id)
+
+	return response.render("initial/list_produto.html", 
+		produto=produto)
+
 ##---------------------------Agendamentos
 #@auth.requires_membership('admin')
 def agendamento_agt():
@@ -384,6 +411,15 @@ def form_emprestimo_agt():
 	query = (db.auth_user.id == session.auth.user.id)
 	lem = db(query).select(db.auth_user.lembrete)
 	lem = lem[0].lembrete
+	checkbox = '' 
+
+	if request.vars.f_nome != None:
+		if type(request.vars.f_telefone) is not list:
+			request.vars.f_telefone=[request.vars.f_telefone]
+		db.emprestimo.telefone.default	=request.vars.f_telefone
+		db.emprestimo.orgao.default 	=request.vars.f_orgao
+		db.emprestimo.nome.default 		=request.vars.f_nome
+		db.emprestimo.cpf.default 		=request.vars.f_cpf
 
 	if id_edit is None:
 		form 	= SQLFORM(db.emprestimo)
@@ -396,10 +432,14 @@ def form_emprestimo_agt():
 		session.flash="Registro processado"
 		logger.debug("usr:%s - INSERT - tabela:emprestimo - cpf:%s - nome:%s"\
 		%(session.auth.user.username, request.vars.cpf, request.vars.nome))
-		redirect(URL("form_emprestimo_agt")) 
+		if request.vars.multi == 'on':
+			redirect(URL("form_emprestimo_agt", vars={'f_orgao':form.vars.orgao,'f_nome':form.vars.nome, 'f_telefone':form.vars.telefone, 'f_cpf':form.vars.cpf, 'entrada':'1'})) 
+		redirect(URL("form_emprestimo_agt"))
 	elif form.errors:
 		logger.error("usr:%s - FORM_ERROR - tabela:emprestimo - req:%s"\
 		%(session.auth.user.username, request.vars))
+		if request.vars.multi == 'on':
+			checkbox = 'checked'
 		response.flash=("Ops, algo está errado")
 
 	if form_agen.process().accepted:
@@ -414,7 +454,7 @@ def form_emprestimo_agt():
 	
 		
 	return response.render("initial/form_emprestimo_agt.html", 
-	 form_agen=form_agen, date=date, lem=lem, form=form, ls_user=ls_user)
+	 form_agen=form_agen, date=date, lem=lem, form=form, ls_user=ls_user, checkbox=checkbox)
 
 #@auth.requires_membership('supervisor', 'admin')
 def form_emprestimo_spv():
@@ -531,8 +571,8 @@ def emprestimo2():
 		& (db.auth_user.supervisor == session.auth.user.username)\
 		& (db.emprestimo.data_emp.year()==ano)\
 		& (db.emprestimo.data_emp.month()==mes)
-	soma = db(query).select(db.emprestimo.valor_total.sum())
-	soma = soma[0]._extra['SUM(emprestimo.valor_total)']
+	#soma = db(query).select(db.emprestimo.valor_total.sum())
+	#soma = soma[0]._extra['SUM(emprestimo.valor_total)']
 	#
 	paginate 	=	10
 	if not request.vars.page:
@@ -554,9 +594,19 @@ def emprestimo2():
 	else:
 		meta = 	session.auth.user.meta
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
-	
+	soma = soma_calc(query)
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
+
+def soma_calc(query):
+	vl =[]
+	for dado in db(query).select():
+		if db(db.situacao.id_emprestimo == dado.emprestimo.id).count() > 0:
+			id_status = db(db.situacao.id_emprestimo == dado.emprestimo.id).select().last()['id_status']
+			if db(db.status.id == id_status).select(db.status.status)[0].status.lower() == 'pago':
+				vl.append(dado.emprestimo.valor_total)
+	return sum(vl)
+
 
 ##Agente Total
 def emprestimo_agt():
@@ -587,7 +637,7 @@ def emprestimo_agt():
 	#
 	meta = session.auth.user.meta
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
-	
+	soma = soma_calc(query)
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x, soma=soma, meta=meta)
 
@@ -618,6 +668,7 @@ def emprestimo_admin_total():
 	#
 
 	con = db(query).select(left=db.estados.on(db.estados.id == db.emprestimo.estado), limitby=(start,end), orderby=~db.emprestimo.id)
+	print con
 	return response.render("initial/list_emprestimo2.html", con=con,
 		end=end, paginacao='on', regis=regis, paginate=paginate, x=x)
 
@@ -917,6 +968,8 @@ def delete():
 	if funcao 	==	"auth_user":
 		tabela 	= 	db.auth_user.id
 		funcao 	= 	"users"
+	if funcao 	== 	"produto":
+		tabela 	=	db.produto.id
 
 	db(tabela == id_tab).delete()	
 	redirect(URL(funcao))
